@@ -36,12 +36,11 @@
         </kendo-grid>
     </app-card>
     <app-card id="kantar-panel-card" class="col-md-4" [options]="false" [hidHeader]="true">
-        <button class="btn btn-primary" (click)="connectSerialPort()"> Bağlan</button>
-        <li>
-            <ul *ngFor="let item of serialPortMessages">
+        <ul class="mt-3">
+            <li *ngFor="let item of serialPortMessages">
                 {{item}}
-            </ul>
-        </li>
+            </li>
+        </ul>
         <div id="ports"></div>
     </app-card>
 </div>

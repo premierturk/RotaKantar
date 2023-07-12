@@ -5,6 +5,7 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './theme/shared/shared.module';
 
+import { ElectronService } from 'ngx-electron';
 import { AppComponent } from './app.component';
 import { AdminComponent } from './theme/layout/admin/admin.component';
 import { AuthComponent } from './theme/layout/auth/auth.component';
@@ -66,7 +67,7 @@ registerLocaleData(LocaleTr);
   ],
   providers: [
     NavigationItem,
-    NgbActiveModal,
+    NgbActiveModal, ElectronService,
     { provide: LOCALE_ID, useValue: "tr" },
     { provide: MessageService, useClass: LanguageService }
   ],

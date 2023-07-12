@@ -1,0 +1,11 @@
+{
+    "Kantar_1": {
+        "SerialPort": {
+            "path": "COM10",
+            "autoOpen": false,
+            "baudRate": 9600,
+            "dataBits": 8,
+            "parity": "none"
+        }
+    }
+}
