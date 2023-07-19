@@ -8,7 +8,7 @@ import { SharedModule } from "../../theme/shared/shared.module";
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    DashboardComponent,
   ],
   imports: [
     CommonModule,

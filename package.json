@@ -5,12 +5,12 @@
   "scripts": {
     "ng": "ng",
     "postinstall": "ngcc",
-    "start": "ng serve",
+    "start": "ng serve --proxy-config src/proxy.conf.json",
     "build": "ng build",
     "build:ssr": "ng run Security.Web:server:dev",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "electronB": "ng build --prod --base-href ./ && electron .",
+    "electronB": "ng build --base-href ./ && electron .",
     "electron": "electron ."
   },
   "browser": {
@@ -76,7 +76,6 @@
     "fullcalendar": "^3.10.1",
     "hammerjs": "^2.0.8",
     "jquery": "^3.6.3",
-    "kill-port-process": "^3.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "ng-click-outside": "^9.0.1",
@@ -107,7 +106,7 @@
     "@types/datatables.net": "^1.10.17",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^14.14.33",
-    "electron": "^13.6.6",
+    "electron": "^13.6.9",
     "jasmine-core": "~3.10.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",

@@ -10,7 +10,7 @@
                     {{rowIndex+1}}
                 </ng-template>
             </kendo-grid-column>
-            <kendo-grid-column [width]="100" title="Ay/Yıl" field="ayYil"></kendo-grid-column>
+            <!-- <kendo-grid-column [width]="100" title="Ay/Yıl" field="ayYil"></kendo-grid-column>
             <kendo-grid-column [width]="400" title="Firma" field="firma"></kendo-grid-column>
             <kendo-grid-column [width]="150" title="İrsaliye Tarihi" field="irsaliyeTar"></kendo-grid-column>
             <kendo-grid-column [width]="200" title="İrsaliye No" field="irsaliyeNo"></kendo-grid-column>
@@ -32,15 +32,46 @@
             <kendo-grid-column [width]="200" title="Nakliye Firması" field="nakliyeFirmasi"></kendo-grid-column>
             <kendo-grid-column [width]="300" title="Kantar" field="kantar"></kendo-grid-column>
             <kendo-grid-column [width]="150" title="Malzeme" field="malzeme"></kendo-grid-column>
-            <kendo-grid-column [width]="1000" title="Açıklama" field="aciklama"></kendo-grid-column>
+            <kendo-grid-column [width]="1000" title="Açıklama" field="aciklama"></kendo-grid-column> -->
         </kendo-grid>
     </app-card>
     <app-card id="kantar-panel-card" class="col-md-4" [options]="false" [hidHeader]="true">
-        <ul class="mt-3">
-            <li *ngFor="let item of serialPortMessages">
-                {{item}}
-            </li>
-        </ul>
-        <div id="ports"></div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Plaka</label>
+                <kendo-dropdownlist [popupSettings]="{appendTo: 'component'}" class="width" [data]="dsPlaka"
+                    [textField]="'plakaNo'" [valueField]="'plakaNo'" [valuePrimitive]="true"
+                    [(ngModel)]='formData.plaka'>
+                </kendo-dropdownlist>
+            </div>
+            <div class="form-group">
+                <label>Firma</label>
+                <kendo-textbox [disabled]="true" class="width" [clearButton]="true"
+                    [(ngModel)]='formData.randevuSonucAdi' placeholder="Firma">
+                </kendo-textbox>
+            </div>
+            <div class="form-group">
+                <label>Dara</label>
+                <kendo-textbox [disabled]="true" class="width" [clearButton]="true"
+                    [(ngModel)]='formData.randevuSonucAdi' placeholder="Dara">
+                </kendo-textbox>
+            </div>
+            <div class="form-group">
+                <label>Tonaj</label>
+                <kendo-textbox [disabled]="true" class="width" [clearButton]="true"
+                    [(ngModel)]='formData.randevuSonucAdi' placeholder="Tonaj">
+                </kendo-textbox>
+            </div>
+            <div class="form-group">
+                <label>Malzeme Türü</label>
+                <kendo-dropdownlist [popupSettings]="{appendTo: 'component'}" class="width" [data]="dsMalzemeTur"
+                    [textField]="'MalzemeTuru'" [valueField]="'MalzemeTuruId'" [valuePrimitive]="true"
+                    [(ngModel)]='formData.plaka' placeholder="Başvuru Yılı Seçiniz">
+                </kendo-dropdownlist>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <app-button [buttonType]="ButtonType.Kaydet" (onclick)="kaydet()"></app-button>
+        </div>
     </app-card>
 </div>

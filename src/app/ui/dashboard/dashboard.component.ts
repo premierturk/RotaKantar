@@ -1,9 +1,12 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DataStateChangeEvent, GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
 import { process, State } from '@progress/kendo-data-query';
 import { HttpClient } from '@angular/common/http';
 import { ElectronService } from 'ngx-electron';
+import { ButtonType, DataSource } from 'src/app/service/datasource';
+import { environment } from 'src/app/environment';
 @Component({
   selector: 'app-tespit-history',
   templateUrl: './dashboard.component.html',
@@ -11,23 +14,27 @@ import { ElectronService } from 'ngx-electron';
 })
 export class DashboardComponent implements OnInit {
   static componentInstance: any;
+
   constructor(
     public modalService: NgbModal,
     private http: HttpClient,
     private _electronService: ElectronService,
     private ref: ChangeDetectorRef,
+    private ds: DataSource
   ) {
-
     if (this._electronService.ipcRenderer)
       this._electronService.ipcRenderer.on('kantar', this.onDataKantar);
     DashboardComponent.componentInstance = this;
+    this.form = new FormGroup({
+      plakaNo: new FormControl(this.formData.plakaNo, [Validators.required]),
+      malzemeTur: new FormControl(this.formData.malzemeTur, [Validators.required]),
+    });
   }
-
+  private url: string = environment.production ? environment.apiUrl : "/api";
   @ViewChild('grid') grid: GridComponent;
-  private url = 'http://localhost:8081';
   public view: GridDataResult;
-  public list: any[];
-  public serialPortMessages: any[] = [];
+  public form: FormGroup;
+  public ButtonType = ButtonType;
   public state: State = {
     skip: 0,
     take: 17,
@@ -38,27 +45,35 @@ export class DashboardComponent implements OnInit {
       },
     ]
   };
-  i = 0;
+  public formData: any = {
+    randevuSonucAdi: '',
+    aktif: true,
+  };
+  public dsPlaka: Array<any> = [];
+  public dsMalzemeTur: Array<any> = [];
+
   ngOnInit(): void {
     this.BindForm();
   }
 
   onDataKantar(event, data) {
     const component = DashboardComponent.componentInstance;
+
     component.serialPortMessages.push(data);
-    component.ref.detectChanges();
+    console.log(data);
   }
 
   async BindForm() {
-    this.http.get<any>(`${this.url}/dolgu-listesi`).subscribe(data => {
-      this.list = data;
-      this.view = process(this.list, this.state);
-    })
+    this.view = await this.ds.get(`${this.url}/api/KantarList`);
+    this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
+    this.dsMalzemeTur = await this.ds.get(`${this.url}/api/MalzemeTuruList`);
   }
 
   public dataStateChange(state: DataStateChangeEvent): void {
     this.state = state;
-    this.view = process(this.list, this.state);
   }
 
+  async kaydet() {
+
+  }
 }

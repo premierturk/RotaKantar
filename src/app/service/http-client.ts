@@ -9,15 +9,10 @@ function handleDates(body: any) {
   if (body === null || body === undefined || typeof body !== 'object') {
     return body;
   }
-
   if (!Array.isArray(body)) { return body; }
-
-  // tslint:disable-next-line:only-arrow-functions
-  body.forEach(function(item) {
-
+  body.forEach(function (item) {
     for (const key of Object.keys(item)) {
       const value = item[key];
-
       const isDate = moment(value, 'DD-MM-YYYY', true).isValid();
       if (isDate) {
         item[key] = new Date(value);
@@ -25,31 +20,22 @@ function handleDates(body: any) {
         handleDates(value);
       }
     }
-
   });
 }
 
-// tslint:disable-next-line:only-arrow-functions
-instance.interceptors.response.use(function(response) {
-
+instance.interceptors.response.use(function (response) {
   if (response.data.data !== undefined) {
     handleDates(response.data.data);
   }
-
   return response;
-// tslint:disable-next-line:only-arrow-functions
-}, function(error) {
+}, function (error) {
   return Promise.reject(error);
 });
 
 const strUser = window.localStorage.getItem('user');
-if (strUser !== null && strUser !== 'null') {
-const user: any = JSON.parse(strUser);
-  instance.defaults.headers.common.Authorization = user.token;
+if (strUser !== null && strUser !== 'null' && strUser != undefined && strUser != "undefined") {
+  const user: any = JSON.parse(strUser);
+  instance.defaults.headers.common.Authorization = `Bearer ${user.access_token}`;
 }
-
-
-
-
 
 export default instance;
