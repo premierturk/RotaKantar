@@ -10,7 +10,7 @@ import { ButtonType } from '../../../../service/datasource';
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss']
 })
-export class ButtonComponent implements AfterViewInit, OnInit {
+export class ButtonComponent implements OnInit {
 
   @Input() public isdisabled?: boolean;
   @Input() public text?: string;
@@ -18,9 +18,7 @@ export class ButtonComponent implements AfterViewInit, OnInit {
   @Input() public class?: string;
   @Input() public icon?: string;
   @Input() public condition?: boolean;
-
   public isdisabledbool?: boolean
-
 
   @Output() public onclick: EventEmitter<void> = new EventEmitter();
   router: Router;
@@ -28,131 +26,52 @@ export class ButtonComponent implements AfterViewInit, OnInit {
   constructor(private rout: Router) {
     this.router = rout;
   }
-
-
- 
-
   ngOnInit() {
-   
-
-    let yetki = JSON.parse(localStorage.getItem('user')).yetki.filter(a => a.pageUrl == this.router.routerState.snapshot.url);
-    if (yetki.length < 1) {
-      //this.router.navigate(['maintenance/offline-ui'], { queryParams: { url: window.location.pathname } });
-      
-
+    this.condition = true;
+    if (this.buttonType === ButtonType.Yeni) {
+      this.text = (this.text === undefined) ? 'Yeni' : this.text;
+      this.class = (this.class === undefined) ? 'btn-primary' : this.class;
+      this.icon = (this.icon === undefined) ? 'far fa-file' : this.icon;
     }
-    else {
-      this.condition = true;
-
-      if (this.buttonType === ButtonType.Yeni) {
-
-        if (yetki[0].c == false) {
-          this.condition = false;
-        } else {
-          this.text = (this.text === undefined) ? 'Yeni' : this.text;
-          this.class = (this.class === undefined) ? 'btn-primary' : this.class;
-          this.icon = (this.icon === undefined) ? 'far fa-file' : this.icon;
-        }
-      }
-      else if (this.buttonType === ButtonType.Duzenle) {
-
-        if (yetki[0].u == false) {
-
-          this.condition = false;
-
-        } else {
-          this.text = (this.text === undefined) ? 'Düzenle' : this.text;
-          this.class = (this.class === undefined) ? 'btn-success' : this.class;
-          this.icon = (this.icon === undefined) ? 'far fa-edit' : this.icon;
-        }
-
-      }
-      else if (this.buttonType === ButtonType.Sil) {
-        if (yetki[0].d == false) {
-
-          this.condition = false;
-
-        } else {
-          this.text = (this.text === undefined) ? 'Sil' : this.text;
-          this.class = (this.class === undefined) ? 'btn-danger' : this.class;
-          this.icon = (this.icon === undefined) ? 'fas fa-trash' : this.icon;
-        }
-
-
-      }
-      else if (this.buttonType === ButtonType.Excel) {
-
-        if (yetki[0].e == false) {
-
-          this.condition = false;
-
-        } else {
-
-
-          this.text = (this.text === undefined) ? 'Excel' : this.text;
-          this.class = (this.class === undefined) ? 'btn-info' : this.class;
-          this.icon = (this.icon === undefined) ? 'fas fa-file-excel' : this.icon;
-        }
-
-      }
-      else if (this.buttonType === ButtonType.Pdf) {
-        if (yetki[0].e == false) {
-
-          this.condition = false;
-
-        } else {
-          this.text = (this.text === undefined) ? 'Pdf' : this.text;
-          this.class = (this.class === undefined) ? 'btn-info' : this.class;
-          this.icon = (this.icon === undefined) ? 'fas fa-file-pdf' : this.icon;
-
-        }
-      }
-      else if (this.buttonType === ButtonType.Kaydet) {
-        if (yetki[0].c == false) {
-
-          this.condition = false;
-
-        } else {
-          this.text = (this.text === undefined) ? 'Kaydet' : this.text;
-          this.class = (this.class === undefined) ? 'btn-success' : this.class;
-          this.icon = (this.icon === undefined) ? 'fas fa-save' : this.icon;
-        }
-
-      }
-      else if (this.buttonType === ButtonType.Kapat) {
-
-        this.text = (this.text === undefined) ? 'Kapat' : this.text;
-        this.class = (this.class === undefined) ? 'btn-danger' : this.class;
-        this.icon = (this.icon === undefined) ? 'fas fa-folder' : this.icon;
-
-
-      }
-      else if (this.buttonType === ButtonType.Dogrula) {
-
-        this.text = (this.text === undefined) ? 'Doğrula' : this.text;
-        this.class = (this.class === undefined) ? 'btn-secondary' : this.class;
-        this.icon = (this.icon === undefined) ? 'fas fa-check' : this.icon;
-
-
-      }
-      else if (this.buttonType === ButtonType.Ara) {
-
-        this.text = (this.text === undefined) ? 'Bul' : this.text;
-        this.class = (this.class === undefined) ? 'btn-secondary' : this.class;
-        this.icon = (this.icon === undefined) ? 'fas fa-search' : this.icon;
-
-
-      }
-
-
+    else if (this.buttonType === ButtonType.Duzenle) {
+      this.text = (this.text === undefined) ? 'Düzenle' : this.text;
+      this.class = (this.class === undefined) ? 'btn-success' : this.class;
+      this.icon = (this.icon === undefined) ? 'far fa-edit' : this.icon;
     }
-
-
-  }
-
-  ngAfterViewInit() {
-
-
+    else if (this.buttonType === ButtonType.Sil) {
+      this.text = (this.text === undefined) ? 'Sil' : this.text;
+      this.class = (this.class === undefined) ? 'btn-danger' : this.class;
+      this.icon = (this.icon === undefined) ? 'fas fa-trash' : this.icon;
+    }
+    else if (this.buttonType === ButtonType.Excel) {
+      this.text = (this.text === undefined) ? 'Excel' : this.text;
+      this.class = (this.class === undefined) ? 'btn-info' : this.class;
+    }
+    else if (this.buttonType === ButtonType.Pdf) {
+      this.text = (this.text === undefined) ? 'Pdf' : this.text;
+      this.class = (this.class === undefined) ? 'btn-info' : this.class;
+      this.icon = (this.icon === undefined) ? 'fas fa-file-pdf' : this.icon;
+    }
+    else if (this.buttonType === ButtonType.Kaydet) {
+      this.text = (this.text === undefined) ? 'Kaydet' : this.text;
+      this.class = (this.class === undefined) ? 'btn-success' : this.class;
+      this.icon = (this.icon === undefined) ? 'fas fa-save' : this.icon;
+    }
+    else if (this.buttonType === ButtonType.Kapat) {
+      this.text = (this.text === undefined) ? 'Kapat' : this.text;
+      this.class = (this.class === undefined) ? 'btn-danger' : this.class;
+      this.icon = (this.icon === undefined) ? 'fas fa-folder' : this.icon;
+    }
+    else if (this.buttonType === ButtonType.Dogrula) {
+      this.text = (this.text === undefined) ? 'Doğrula' : this.text;
+      this.class = (this.class === undefined) ? 'btn-secondary' : this.class;
+      this.icon = (this.icon === undefined) ? 'fas fa-check' : this.icon;
+    }
+    else if (this.buttonType === ButtonType.Ara) {
+      this.text = (this.text === undefined) ? 'Bul' : this.text;
+      this.class = (this.class === undefined) ? 'btn-secondary' : this.class;
+      this.icon = (this.icon === undefined) ? 'fas fa-search' : this.icon;
+    }
   }
 }
 

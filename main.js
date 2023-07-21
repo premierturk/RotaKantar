@@ -54,65 +54,6 @@ function createWindow() {
     mainWindow.maximize();
     mainWindow.loadFile('dist/ronesans-kantar/index.html');
 }
-ipc.on("onprint", async (event, data) => {
-    // const exePath = path.join(__dirname, "print/PrintFis.exe");
-
-    // // fisno: "1155",
-    // // islemtarihi: "10.10.2010",
-    // // islemsaat: "10:02",
-    // // belgeno: "4587-2019",
-    // // firma: "BAHADIR HAFRİYAT",
-    // // plakano: "41 GG 4587",
-    // // tonaj: "45874",
-    // // dara: "15000",
-    // // net: "32584",
-    // // tutar: "1458,36",
-    // // bakiye: "12898102",
-    // // belgemik: "1000",
-    // // belgetopdok: "3221",
-    // // belgekalmik: "45666",
-
-    // const parameter =
-    //     "KENTKONUT_A.Ş " +
-    //     replaceAll(" ", "_", data.fisno) +
-    //     " " +
-    //     replaceAll(" ", "_", data.islemtarihi) +
-    //     " " +
-    //     replaceAll(" ", "_", data.islemsaat) +
-    //     " " +
-    //     replaceAll(" ", "_", data.belgeno) +
-    //     " " +
-    //     replaceAll(" ", "_", data.firma) +
-    //     " " +
-    //     replaceAll(" ", "_", data.plakano) +
-    //     " " +
-    //     replaceAll(" ", "_", data.tonaj) +
-    //     " " +
-    //     replaceAll(" ", "_", data.dara) +
-    //     " " +
-    //     replaceAll(" ", "_", data.net) +
-    //     " " +
-    //     replaceAll(" ", "_", data.tutar) +
-    //     " " +
-    //     replaceAll(" ", "_", data.bakiye) +
-    //     " " +
-    //     replaceAll(" ", "_", data.belgemik) +
-    //     " " +
-    //     replaceAll(" ", "_", data.belgetopdok) +
-    //     " " +
-    //     replaceAll(" ", "_", data.belgekalmik);
-
-    // console.log(exePath + " " + parameter);
-
-    // nrc.run(exePath + " " + parameter).then(
-    //     function (exitCodes) {
-    //         console.log("printed", parameter + " " + exitCodes);
-    //     },
-    //     function (err) {
-    //         console.log("Command failed to run with error: ", err);
-    //     }
-    // );
-});
 
 function replaceAll(find, replace, str) {
     while (str.indexOf(find) > -1) {
@@ -128,7 +69,12 @@ app.on("window-all-closed", function () {
 app.on("activate", function () {
     if (mainWindow === null) createWindow();
 });
+
 ipcMain.on("restart", async (event, data) => {
     app.exit();
     app.relaunch();
+});
+
+ipcMain.on("onprint", async (event, data) => {
+     
 });

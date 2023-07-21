@@ -17,18 +17,19 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="feather icon-lock"></i></span>
               </div>
-              <input type="password" class="form-control" placeholder="Şifre giriniz" [(ngModel)]="formData.password">
+              <input type="password" class="form-control" placeholder="Şifre giriniz" [(ngModel)]="formData.password"
+                (keyup.enter)="giris()">
             </div>
 
-            <div class="form-group text-left mt-2">
+            <!-- <div class="form-group text-left mt-2">
               <div class="checkbox checkbox-primary d-inline">
                 <input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" checked="">
                 <label for="checkbox-fill-a1" class="cr"> Otomatik giriş</label>
               </div>
-            </div>
+            </div> -->
 
 
-            <button class="btn btn-block btn-primary mb-4" (click)="giris()">
+            <button class="btn btn-block btn-primary mb-3" (click)="giris()">
               Giriş
             </button>
             <div [hidden]="!isLoading">

@@ -5,12 +5,11 @@
 <ng-template #mainHeader>
   <div class="m-header">
     <!-- <a href="javascript:" class="mobile-menu" id="mobile-collapse" (click)="navCollapse()"><span></span></a> -->
-    <a [routerLink]="['/dashboard/analytics']" class="b-brand">
-      <img id="main-logo" src="assets/images/logo.png" alt="" class="logo">
-      <img src="assets/images/logo-icon.png" alt="" class="logo-thumb">
-    </a>
-    <a class="mob-toggler" [ngClass]="{'on' : this.menuClass}" href="javascript:" (click)="toggleMobOption()"><i
-        class="feather icon-more-vertical"></i></a>
+
+    <div class="pt-2">
+      <h4 class="text-white">Rota Kantar <span class="pl-1 k-font-size-xs">v1.0.0</span></h4>
+    </div>
+
   </div>
   <div class="collapse navbar-collapse" [style.display]="this.collapseStyle">
     <app-nav-left class="mr-auto"></app-nav-left>

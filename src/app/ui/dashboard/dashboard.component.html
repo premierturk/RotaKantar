@@ -1,77 +1,56 @@
 <div class="row">
     <app-card id="grid-card" class="col-md-8" [options]="false" [hidHeader]="true">
-
         <kendo-grid #grid [data]="view" [selectable]="true" [navigable]="true" [pageSize]="state.take"
             [skip]="state.skip" [sortable]="true" [group]="state.group" [filter]="state.filter" [sort]="state.sort"
             [pageable]="true" [filterable]="true" [resizable]="true" kendoGridSelectBy="siraNo"
             (dataStateChange)="dataStateChange($event)">
             <kendo-grid-column [width]="100" title="No">
                 <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
-                    {{rowIndex+1}}
+                    {{ rowIndex + 1 }}
                 </ng-template>
             </kendo-grid-column>
-            <!-- <kendo-grid-column [width]="100" title="Ay/Yıl" field="ayYil"></kendo-grid-column>
-            <kendo-grid-column [width]="400" title="Firma" field="firma"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="İrsaliye Tarihi" field="irsaliyeTar"></kendo-grid-column>
-            <kendo-grid-column [width]="200" title="İrsaliye No" field="irsaliyeNo"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Plaka" field="plaka"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Madde Kodu" field="maddeKodu"></kendo-grid-column>
-            <kendo-grid-column [width]="500" title="Malzeme Tanımı" field="malzemeTanim"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Firma İlk Tartım" field="firmaIlkTartim"></kendo-grid-column>
-            <kendo-grid-column [width]="160" title="Firma Son Tartım" field="firmaSonTartim"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Firma Net" field="firmaNet"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Rec İlk Tartım" field="recIlkTartim"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Rec Son Tartım" field="recSonTartim"></kendo-grid-column>
-            <kendo-grid-column [width]="100" title="Rec Net" field="recNet"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Hakediş Miktarı" field="hakedisMiktar"></kendo-grid-column>
-            <kendo-grid-column [width]="200" title="Fark +/- (Rec-Firma)" field="fark"></kendo-grid-column>
-            <kendo-grid-column [width]="300" title="Döküm Yeri" field="dokumYeri"></kendo-grid-column>
-            <kendo-grid-column [width]="200" title="Teslim Alan" field="teslimAlan"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Rec Kantar No" field="recKantarNo"></kendo-grid-column>
-            <kendo-grid-column [width]="200" title="Fatura No" field="faturaNo"></kendo-grid-column>
-            <kendo-grid-column [width]="200" title="Nakliye Firması" field="nakliyeFirmasi"></kendo-grid-column>
-            <kendo-grid-column [width]="300" title="Kantar" field="kantar"></kendo-grid-column>
-            <kendo-grid-column [width]="150" title="Malzeme" field="malzeme"></kendo-grid-column>
-            <kendo-grid-column [width]="1000" title="Açıklama" field="aciklama"></kendo-grid-column> -->
         </kendo-grid>
     </app-card>
     <app-card id="kantar-panel-card" class="col-md-4" [options]="false" [hidHeader]="true">
         <div class="modal-body">
             <div class="form-group">
                 <label>Plaka</label>
-                <kendo-dropdownlist [popupSettings]="{appendTo: 'component'}" class="width" [data]="dsPlaka"
-                    [textField]="'plakaNo'" [valueField]="'plakaNo'" [valuePrimitive]="true"
-                    [(ngModel)]='formData.plaka'>
+                <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
+                    [data]="f_dsPlaka" [textField]="'PlakaNo'" [valueField]="'AracId'" [valuePrimitive]="true"
+                    (filterChange)="handleFilterArac($event)" [(ngModel)]="formData.AracId"
+                    (valueChange)="plakaSelected($event)">
                 </kendo-dropdownlist>
             </div>
             <div class="form-group">
                 <label>Firma</label>
-                <kendo-textbox [disabled]="true" class="width" [clearButton]="true"
-                    [(ngModel)]='formData.randevuSonucAdi' placeholder="Firma">
+                <kendo-textbox [disabled]="true" class="width" [clearButton]="true" [(ngModel)]="formData.FirmaAdi"
+                    placeholder="Firma">
                 </kendo-textbox>
             </div>
             <div class="form-group">
                 <label>Dara</label>
-                <kendo-textbox [disabled]="true" class="width" [clearButton]="true"
-                    [(ngModel)]='formData.randevuSonucAdi' placeholder="Dara">
-                </kendo-textbox>
+                <kendo-numerictextbox [disabled]="true" class="width" [spinners]="false" format="#"
+                    [(ngModel)]="formData.Dara" placeholder="Dara">
+                </kendo-numerictextbox>
             </div>
             <div class="form-group">
                 <label>Tonaj</label>
-                <kendo-textbox [disabled]="true" class="width" [clearButton]="true"
-                    [(ngModel)]='formData.randevuSonucAdi' placeholder="Tonaj">
-                </kendo-textbox>
+                <kendo-numerictextbox [disabled]="true" class="width" [spinners]="false" format="#"
+                    [(ngModel)]="formData.Tonaj" placeholder="Tonaj">
+                </kendo-numerictextbox>
             </div>
             <div class="form-group">
                 <label>Malzeme Türü</label>
-                <kendo-dropdownlist [popupSettings]="{appendTo: 'component'}" class="width" [data]="dsMalzemeTur"
-                    [textField]="'MalzemeTuru'" [valueField]="'MalzemeTuruId'" [valuePrimitive]="true"
-                    [(ngModel)]='formData.plaka' placeholder="Başvuru Yılı Seçiniz">
+                <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
+                    [data]="f_dsMalzemeTur" [textField]="'MalzemeTuru'" [valueField]="'MalzemeTuruId'"
+                    [valuePrimitive]="true" (filterChange)="handleFilterMalzeme($event)"
+                    [(ngModel)]="formData.MalzemeTipiId" placeholder="Başvuru Yılı Seçiniz">
                 </kendo-dropdownlist>
             </div>
         </div>
         <div class="modal-footer">
-            <app-button [buttonType]="ButtonType.Kaydet" (onclick)="kaydet()"></app-button>
+            <app-button [buttonType]="ButtonType.Kaydet" (onclick)="save()"></app-button>
+            <button class="btn btn-warning" (click)="clearForm()"> Temizle</button>
         </div>
     </app-card>
 </div>

@@ -30,29 +30,23 @@ import { Router } from '@angular/router';
     ])
   ]
 })
-export class NavRightComponent implements OnInit, DoCheck {
-  public visibleUserList: boolean;
-  public chatMessage: boolean;
-  public friendId: boolean;
+export class NavRightComponent implements OnInit, DoCheck { 
   public gradientConfig: any;
+  public nameLastName:string;
   constructor(
     private router: Router,
-  ) {
-    this.visibleUserList = false;
-    this.chatMessage = false;
+  ) { 
     this.gradientConfig = GradientConfig.config;
   }
 
-  ngOnInit() { }
+  ngOnInit() { 
+    this.nameLastName=JSON.parse(localStorage.getItem("user")).Name;
+  }
 
   cikis() {
     localStorage.removeItem("user");
     this.router.navigate(["/giris"]);
-  }
-  onChatToggle(friendID) {
-    this.friendId = friendID;
-    this.chatMessage = !this.chatMessage;
-  }
+  } 
 
   ngDoCheck() {
     if (document.querySelector('body').classList.contains('elite-rtl')) {

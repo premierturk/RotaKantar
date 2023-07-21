@@ -74,7 +74,7 @@ export class DataSource {
         Notiflix.Notify.success('Başarılı');
       }
       else {
-        Notiflix.Notify.failure('Hata oluştu');
+        Notiflix.Notify.failure(data);
       }
 
       return resp.data;
@@ -93,14 +93,11 @@ export class DataSource {
       }
       else {
         Notiflix.Notify.failure('Hata oluştu');
-      }
-
+      } 
       return resp.data;
-    } catch (err) {
-
+    } catch (err) { 
       this.handleErrorResponse(err);
-      return err;
-
+      return err; 
     }
   }
   async delete(url: string) {
