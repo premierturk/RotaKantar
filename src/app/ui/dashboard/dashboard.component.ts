@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.BindGrid();
     this.BindForm();
-    Swal.fire('Bilgilendirme', 'TEST', 'warning');
+    //Swal.fire('Bilgilendirme', 'TEST', 'warning');
   }
 
   onDataKantar(event, data) {
