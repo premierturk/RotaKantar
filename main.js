@@ -1,16 +1,17 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const { SerialPort } = require("serialport");
 const path = require("path");
+const ptp = require("pdf-to-printer");
 const Shortcut = require("electron-shortcut");
+
 var args = process.argv;
+
 const kantarName = "Kantar_1"; //Configürasyonlardan hangi kantar seçilecekse ismi
 
 const config = require("./kantarConfigs.json")[kantarName];
 
 function createWindow() {
   let mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
     show: false,
     webPreferences: {
       nodeIntegration: true,
@@ -20,10 +21,13 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
     },
   });
+
   mainWindow.setMenu(null);
+
   new Shortcut("Ctrl+F12", function (e) {
     mainWindow.webContents.openDevTools();
   });
+
   //Serialport
   if (true) {
     const port = new SerialPort(config.SerialPort);
@@ -33,21 +37,37 @@ function createWindow() {
         return console.log("Error opening port: ", err.message);
       }
     });
+
     port.on("error", function (err) {
       console.log("Error: ", err.message);
     });
 
-    var allMessage = "";
+    var currMessage = "";
+    var messages = [];
     port.on("data", function (data) {
-      allMessage += new Buffer.from(data).toString();
-      if (allMessage.endsWith("\\n")) {
-        allMessage = allMessage.replace("\\n", "");
-        console.log("Data:", allMessage);
-        mainWindow.webContents.send("kantar", [allMessage]);
-        allMessage = "";
+      currMessage += new Buffer.from(data).toString();
+      if (currMessage.endsWith("\\n")) {
+        currMessage = currMessage.replace("\\n", "");
+        console.log("Data:", currMessage);
+
+        messages.push(currMessage);
+
+        if (messages.length == 10) {
+          let allSame = [...new Set(messages)].length == 1;
+
+          if (allSame) {
+            mainWindow.webContents.send("kantar", [messages[0]]);
+            console.log("Data sended => " + messages[0]);
+            messages = [];
+          } else {
+            messages = messages.slice(1);
+          }
+        }
+        currMessage = "";
       }
     });
   }
+
   mainWindow.maximize();
 
   if (args.includes("serve")) {
@@ -57,17 +77,14 @@ function createWindow() {
   }
 }
 
-function replaceAll(find, replace, str) {
-  while (str.indexOf(find) > -1) {
-    str = str.replace(find, replace);
-  }
-  return str;
-}
 app.on("ready", createWindow);
+
 app.allowRendererProcessReuse = false;
+
 app.on("window-all-closed", function () {
   app.quit();
 });
+
 app.on("activate", function () {
   if (mainWindow === null) createWindow();
 });
@@ -77,4 +94,11 @@ ipcMain.on("restart", async (event, data) => {
   app.relaunch();
 });
 
-ipcMain.on("onprint", async (event, data) => {});
+const options = {
+  printer: config.printer,
+};
+
+ipcMain.on("onprint", async (event, data) => {
+  const filePath = path.join(`./CV_Deniz_Arda_Murat.pdf`);
+  await ptp.print(filePath, options);
+});

@@ -1,5 +1,6 @@
 {
     "Kantar_1": {
+        "printer":"Default_printer", 
         "SerialPort": {
             "path": "COM10",
             "autoOpen": false,
