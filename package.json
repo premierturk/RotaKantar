@@ -16,6 +16,34 @@
     "child_process": false,
     "fs": false
   },
+  "build": {
+    "appId": "premierturk.rotakantar",
+    "productName": "Ronesans Kantar",
+    "win": {
+      "publisherName": "Trinity InfoSystem",
+      "publish": [
+        "github"
+      ],
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "tar.gz"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.ico",
+      "license": "assets/agreement.html",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~13.1.0",

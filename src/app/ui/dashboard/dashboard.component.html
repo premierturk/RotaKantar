@@ -1,18 +1,35 @@
 <div class="row">
-    <app-card id="grid-card" class="col-md-8" [options]="false" [hidHeader]="true">
-        <kendo-grid #grid [data]="view" [selectable]="true" [navigable]="true" [pageSize]="state.take"
-            [skip]="state.skip" [sortable]="true" [group]="state.group" [filter]="state.filter" [sort]="state.sort"
-            [pageable]="true" [filterable]="true" [resizable]="true" kendoGridSelectBy="siraNo"
+    <app-card id="grid-card" class="col-md-8 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
+        style="padding : 0px 5px;">
+        <kendo-grid #grid [data]="view" [selectable]="true" [navigable]="true" [pageSize]="state.take" [size]="'medium'"
+            [sortable]="true" [group]="state.group" [filter]="state.filter" [sort]="state.sort" [pageable]="true"
+            [filterable]="true" [resizable]="true" kendoGridSelectBy="KantarId"
             (dataStateChange)="dataStateChange($event)">
-            <kendo-grid-column [width]="100" title="No">
+            <!-- <kendo-grid-column [width]="50" title="No">
                 <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
                     {{ rowIndex + 1 }}
+                </ng-template>
+            </kendo-grid-column> -->
+            <kendo-grid-column title="Firma Adı " field="FirmaAdi"
+                [style]="{'white-space': 'nowrap'}"></kendo-grid-column>
+            <kendo-grid-column title="Alan Adı" field="AlanAdi" [style]="{'white-space': 'nowrap'}"></kendo-grid-column>
+            <kendo-grid-column title="Malzeme Türü" field="MalzemeTuru"
+                [style]="{'white-space': 'nowrap'}"></kendo-grid-column>
+            <kendo-grid-column [width]="100" title="Plaka" field="PlakaNo"></kendo-grid-column>
+            <kendo-grid-column [width]="100" title="Dara" field="Dara"
+                [style]="{'white-space': 'nowrap'}"></kendo-grid-column>
+            <!-- <kendo-grid-column title="Tonaj" field="Tonaj"></kendo-grid-column> -->
+            <kendo-grid-column [width]="100" title="Net Tonaj" field="NetTonaj"></kendo-grid-column>
+            <kendo-grid-column [width]="145" title="Tarih" field="TarihSaat">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                    {{dataItem.TarihSaat | date: 'dd/MM/yyyy HH:mm'}}
                 </ng-template>
             </kendo-grid-column>
         </kendo-grid>
     </app-card>
-    <app-card id="kantar-panel-card" class="col-md-4" [options]="false" [hidHeader]="true">
-        <div class="modal-body">
+    <app-card id="kantar-panel-card" class="col-md-4 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
+        style="padding : 0px 5px;">
+        <div class="modal-body" style="padding: 5px;">
             <div class="form-group">
                 <label>Plaka</label>
                 <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
@@ -48,9 +65,9 @@
                 </kendo-dropdownlist>
             </div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="justify-content: center;">
             <app-button [buttonType]="ButtonType.Kaydet" (onclick)="save()"></app-button>
-            <button class="btn btn-warning" (click)="clearForm()"> Temizle</button>
+            <!-- <button class="btn btn-warning" (click)="clearForm()"> Temizle</button> -->
         </div>
     </app-card>
 </div>

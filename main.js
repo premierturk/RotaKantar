@@ -20,6 +20,7 @@ function createWindow() {
       backgroundThrottling: false,
       preload: path.join(__dirname, "preload.js"),
     },
+    icon:path.join(__dirname, "assets/icon.ico") 
   });
 
   mainWindow.setMenu(null);
@@ -29,7 +30,7 @@ function createWindow() {
   });
 
   //Serialport
-  if (true) {
+  if (false) {
     const port = new SerialPort(config.SerialPort);
 
     port.open(function (err) {

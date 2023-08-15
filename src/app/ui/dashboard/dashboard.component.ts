@@ -16,7 +16,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-tespit-history',
   templateUrl: './dashboard.component.html',
-  styles: [],
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
   static componentInstance: any;
@@ -28,8 +28,11 @@ export class DashboardComponent implements OnInit {
     private ref: ChangeDetectorRef,
     private ds: DataSource
   ) {
-    if (this._electronService.ipcRenderer)
+    if (this._electronService.ipcRenderer) {
       this._electronService.ipcRenderer.on('kantar', this.onDataKantar);
+      this._electronService.ipcRenderer.on('barcode', this.onBarkodRead);
+
+    }
     DashboardComponent.componentInstance = this;
   }
   private url: string = environment.production ? environment.apiUrl : '/api';
@@ -48,17 +51,17 @@ export class DashboardComponent implements OnInit {
     ],
   };
 
-  public formData: any = { FirmaAdi: '' };
-
+  public formData: any = { FirmaAdi: '', Tonaj: 38000 };
   public dsPlaka: Array<any> = [];
   public dsMalzemeTur: Array<any> = [];
   public f_dsPlaka: Array<any> = [];
   public f_dsMalzemeTur: Array<any> = [];
-
+  public saveDisabled: boolean = false;
+  public user: any;
   ngOnInit(): void {
     this.BindGrid();
     this.BindForm();
-    //Swal.fire('Bilgilendirme', 'TEST', 'warning');
+    // Swal.fire('Bilgilendirme', 'TEST', 'warning');
   }
 
   onDataKantar(event, data) {
@@ -66,6 +69,15 @@ export class DashboardComponent implements OnInit {
     component.formData.Tonaj = parseInt(data[0]);
     component.ref.detectChanges();
     console.log(data);
+  }
+  onBarkodRead(event, data) {
+    const component = DashboardComponent.componentInstance;
+    var arac = component.dsPlaka.filter(a => a.PlakaNo = data)[0];
+    if (arac != null && arac != undefined) {
+      component.formData.AracId = arac.AracId;
+      component.ref.detectChanges();
+      console.log(data);
+    }
   }
 
   plakaSelected(a) {
@@ -82,8 +94,7 @@ export class DashboardComponent implements OnInit {
     this.dsMalzemeTur = await this.ds.get(`${this.url}/api/MalzemeTuruList`);
     this.handleFilterMalzeme('');
 
-    const user = JSON.parse(localStorage.getItem('user'));
-    this.formData.TasOcagiId = user.TasOcagiId;
+    this.user = JSON.parse(localStorage.getItem('user'));
   }
 
   async BindGrid() {
@@ -96,17 +107,18 @@ export class DashboardComponent implements OnInit {
   }
 
   async save() {
+    this.formData.TasOcagiId = this.user.TasOcagiId;
     var err = this.validations();
     if (err != '') {
       Notiflix.Notify.failure(err);
       return;
     }
     var result = await this.ds.post(
-      `${this.url}/api/KantarList`,
+      `${this.url}/api/Kantar`,
       this.formData
     );
     if (result) {
-      this.formData = {};
+      this.clearForm();
       this.BindGrid();
     }
   }
@@ -124,7 +136,7 @@ export class DashboardComponent implements OnInit {
   }
 
   async clearForm() {
-    this.formData = { FirmaAdi: '' };
+    this.formData = { FirmaAdi: '', Tonaj: 1000 };
   }
 
   public validations(): string {

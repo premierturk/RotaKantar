@@ -5,6 +5,7 @@
 .anim-rotate {
     animation: anim-rotate 1s linear infinite;
 }
+
 @keyframes anim-rotate {
     100% {
         transform: rotate(360deg);
@@ -14,6 +15,7 @@
 .anim-close-card {
     animation: anim-close-card 1.4s linear;
 }
+
 @keyframes anim-close-card {
     100% {
         opacity: 0.3;
@@ -53,9 +55,10 @@
             right: 10px;
             top: 10px;
             display: inline-block;
-            float: right;
+            //float: right;
             padding: 0;
             position: absolute;
+
             @media only screen and (max-width: 575px) {
                 display: none;
             }
@@ -92,6 +95,7 @@
                     outline: none;
                 }
             }
+
             // custom toggler
             .btn.dropdown-toggle {
                 border: none;
@@ -132,14 +136,15 @@
         &:not([class*="bg-"]) {
             background: transparent;
         }
-        &[class*="bg-"]{
+
+        &[class*="bg-"] {
             border-top: none;
         }
     }
 
     .card-block,
     .card-body {
-        padding: 20px 25px;
+        padding: 5px 10px;
     }
 
     &.card-load {
@@ -154,7 +159,7 @@
             height: 100%;
             display: flex;
             align-items: center;
-            background-color: rgba(256, 256, 256,0.7);
+            background-color: rgba(256, 256, 256, 0.7);
             z-index: 999;
 
             i {
