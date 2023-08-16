@@ -7,10 +7,9 @@
     "postinstall": "ngcc",
     "start": "ng serve --proxy-config src/proxy.conf.json",
     "build": "ng build",
-    "build:ssr": "ng run Security.Web:server:dev",
-    "electron:serve": "concurrently \"npm:start\" \"npm:electron serve\"",
-    "electronB": "ng build --base-href ./ && electron .",
     "electron": "electron .",
+    "electron-serve": "concurrently \"npm:start\" \"npm:electron serve\"",
+    "electronB": "ng build --base-href ./ && electron .",
     "electron-exe": "ng build --prod && electron-builder -w"
   },
   "browser": {
