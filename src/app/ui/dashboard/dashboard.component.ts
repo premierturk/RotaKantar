@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, HostListener } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup } from '@angular/forms';
 import {
@@ -30,8 +30,6 @@ export class DashboardComponent implements OnInit {
   ) {
     if (this._electronService.ipcRenderer) {
       this._electronService.ipcRenderer.on('kantar', this.onDataKantar);
-      this._electronService.ipcRenderer.on('barcode', this.onBarkodRead);
-
     }
     DashboardComponent.componentInstance = this;
   }
@@ -51,44 +49,61 @@ export class DashboardComponent implements OnInit {
     ],
   };
 
-  public formData: any = { FirmaAdi: '', Tonaj: 38000 };
+  public formData: any = { FirmaAdi: '', Tonaj: 0 };
+  public defaultForm: any = {};
   public dsPlaka: Array<any> = [];
   public dsMalzemeTur: Array<any> = [];
   public f_dsPlaka: Array<any> = [];
   public f_dsMalzemeTur: Array<any> = [];
   public saveDisabled: boolean = false;
+  public barcode: string = "";
+
   public user: any;
   ngOnInit(): void {
     this.BindGrid();
     this.BindForm();
-    // Swal.fire('Bilgilendirme', 'TEST', 'warning');
+    Swal.fire('Bilgilendirme', 'TEST', 'warning');
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (event.key == "Enter") {
+      console.log(event.key);
+      const arac = this.dsPlaka.filter((x) => this.barcode.toLocaleUpperCase().includes(x.PlakaNo))[0];
+      this.fillForm(arac);
+      this.barcode = "";
+      return;
+    }
+
+    this.barcode += event.key;
   }
 
   onDataKantar(event, data) {
+    console.log(data);
     const component = DashboardComponent.componentInstance;
     component.formData.Tonaj = parseInt(data[0]);
     component.ref.detectChanges();
-    console.log(data);
   }
-  onBarkodRead(event, data) {
-    const component = DashboardComponent.componentInstance;
-    var arac = component.dsPlaka.filter(a => a.PlakaNo = data)[0];
-    if (arac != null && arac != undefined) {
-      component.formData.AracId = arac.AracId;
-      component.ref.detectChanges();
-      console.log(data);
+
+  public plakaSelected(a) {
+    const arac = this.dsPlaka.filter((x) => x.AracId == a)[0];
+    this.fillForm(arac);
+  }
+
+  public fillForm(arac) {
+    if (arac != undefined && arac != null) {
+      this.formData.AracId = arac.AracId;
+      this.formData.Dara = arac.Dara;
+      this.formData.FirmaAdi = arac.FirmaAdi;
+      this.formData.FirmaId = arac.FirmaId;
     }
   }
 
-  plakaSelected(a) {
-    const arac = this.dsPlaka.filter((x) => x.AracId == a)[0];
-    this.formData.AracId = arac.AracId;
-    this.formData.Dara = arac.Dara;
-    this.formData.FirmaAdi = arac.FirmaAdi;
-    this.formData.FirmaId = arac.FirmaId;
+  public clearForm() {
+    this.formData = this.defaultForm;
   }
 
-  async BindForm() {
+  public async BindForm() {
     this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
     this.handleFilterArac('');
     this.dsMalzemeTur = await this.ds.get(`${this.url}/api/MalzemeTuruList`);
@@ -97,13 +112,25 @@ export class DashboardComponent implements OnInit {
     this.user = JSON.parse(localStorage.getItem('user'));
   }
 
-  async BindGrid() {
+  public async BindGrid() {
     this.view = await this.ds.get(`${this.url}/api/KantarList`);
   }
 
   public dataStateChange(state: DataStateChangeEvent): void {
     this.state = state;
     this.BindGrid();
+  }
+
+  public handleFilterArac(keyword) {
+    this.f_dsPlaka = this.dsPlaka.filter((x) =>
+      x.PlakaNo.includes(keyword.toUpperCase())
+    );
+  }
+
+  public handleFilterMalzeme(keyword) {
+    this.f_dsMalzemeTur = this.dsMalzemeTur.filter((x) =>
+      x.MalzemeTuru.includes(keyword.toUpperCase())
+    );
   }
 
   async save() {
@@ -121,22 +148,6 @@ export class DashboardComponent implements OnInit {
       this.clearForm();
       this.BindGrid();
     }
-  }
-
-  handleFilterArac(keyword) {
-    this.f_dsPlaka = this.dsPlaka.filter((x) =>
-      x.PlakaNo.includes(keyword.toUpperCase())
-    );
-  }
-
-  handleFilterMalzeme(keyword) {
-    this.f_dsMalzemeTur = this.dsMalzemeTur.filter((x) =>
-      x.MalzemeTuru.includes(keyword.toUpperCase())
-    );
-  }
-
-  async clearForm() {
-    this.formData = { FirmaAdi: '', Tonaj: 1000 };
   }
 
   public validations(): string {

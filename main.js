@@ -2,11 +2,11 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const { SerialPort } = require("serialport");
 const path = require("path");
 const ptp = require("pdf-to-printer");
-const Shortcut = require("electron-shortcut");
+const Shortcut = require("electron-shortcut");  
 
 var args = process.argv;
 
-const kantarName = "Kantar_1"; //Configürasyonlardan hangi kantar seçilecekse ismi
+const kantarName = "debugKantar"; //Configürasyonlardan hangi kantar seçilecekse ismi
 
 const config = require("./kantarConfigs.json")[kantarName];
 
@@ -30,8 +30,8 @@ function createWindow() {
   });
 
   //Serialport
-  if (false) {
-    const port = new SerialPort(config.SerialPort);
+  if (config.kantar) {
+    const port = new SerialPort(config.serialPort);
 
     port.open(function (err) {
       if (err) {
@@ -74,7 +74,7 @@ function createWindow() {
   if (args.includes("serve")) {
     mainWindow.loadURL("http://localhost:4200");
   } else {
-    mainWindow.loadFile("dist/ronesans-kantar/index.html");
+    mainWindow.loadURL(`file://${__dirname}/out/rota-kantar/index.html`)
   }
 }
 

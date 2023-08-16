@@ -1,6 +1,6 @@
 {
-  "name": "ronesans-kantar",
-  "version": "0.0.0",
+  "name": "rota-kantar",
+  "version": "1.0.0",
   "main": "main.js",
   "scripts": {
     "ng": "ng",
@@ -10,7 +10,8 @@
     "build:ssr": "ng run Security.Web:server:dev",
     "electron:serve": "concurrently \"npm:start\" \"npm:electron serve\"",
     "electronB": "ng build --base-href ./ && electron .",
-    "electron": "electron ."
+    "electron": "electron .",
+    "electron-exe": "ng build --prod && electron-builder -w"
   },
   "browser": {
     "child_process": false,
@@ -18,9 +19,13 @@
   },
   "build": {
     "appId": "premierturk.rotakantar",
-    "productName": "Ronesans Kantar",
+    "productName": "Rota Kantar",
+    "directories": {
+      "buildResources": "assets"
+    },
     "win": {
-      "publisherName": "Trinity InfoSystem",
+      "publisherName": "Premierturk",
+      "icon": "./assets/icon.ico",
       "publish": [
         "github"
       ],

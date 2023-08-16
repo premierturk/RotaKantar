@@ -10,5 +10,6 @@ export class GradientConfig {
     navFixedLayout: true,
     headerFixedLayout: true,
     boxLayout: false,
+    appName: "Rota Kantar"
   };
 }

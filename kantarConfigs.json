@@ -1,8 +1,9 @@
 {
-    "Kantar_1": {
-        "printer":"Default_printer", 
-        "SerialPort": {
-            "path": "COM10",
+    "debugKantar": {
+        "kantar": true,
+        "printer": "Default_printer",
+        "serialPort": {
+            "path": "COM14",
             "autoOpen": false,
             "baudRate": 9600,
             "dataBits": 8,
