@@ -2,14 +2,20 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const { SerialPort } = require("serialport");
 const path = require("path");
 const ptp = require("pdf-to-printer");
-const Shortcut = require("electron-shortcut");  
+const Shortcut = require("electron-shortcut");   
+const fs = require('fs');
 
-var args = process.argv;
+var args = process.argv; 
 
-const kantarName = "debugKantar"; //Configürasyonlardan hangi kantar seçilecekse ismi
+var resourcesRoot = fs.existsSync("./kantarConfigs.json") ? "./" : "./resources/";
 
-const config = require("./kantarConfigs.json")[kantarName];
+const jsonFile = JSON.parse(fs.readFileSync(resourcesRoot+'kantarConfigs.json'));  
+const config = jsonFile[jsonFile.aktifKantar];
 
+ if(config==undefined){
+  throw new Error("KANTAR KONFİGÜRASYONU BULUNAMADI!");
+ }
+ 
 function createWindow() {
   let mainWindow = new BrowserWindow({
     show: false,

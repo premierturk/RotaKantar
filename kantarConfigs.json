@@ -1,5 +1,28 @@
 {
+    "aktifKantar": "denugKantar",
     "debugKantar": {
+        "kantar": true,
+        "printer": "Default_printer",
+        "serialPort": {
+            "path": "COM14",
+            "autoOpen": false,
+            "baudRate": 9600,
+            "dataBits": 8,
+            "parity": "none"
+        }
+    },
+    "kantar1": {
+        "kantar": true,
+        "printer": "Default_printer",
+        "serialPort": {
+            "path": "COM14",
+            "autoOpen": false,
+            "baudRate": 9600,
+            "dataBits": 8,
+            "parity": "none"
+        }
+    },
+    "kantar2": {
         "kantar": true,
         "printer": "Default_printer",
         "serialPort": {

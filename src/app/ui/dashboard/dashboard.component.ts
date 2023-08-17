@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if (event.key == "Enter") {
-      console.log(event.key);
+      console.log(this.barcode);
       const arac = this.dsPlaka.filter((x) => this.barcode.toLocaleUpperCase().includes(x.PlakaNo))[0];
       this.fillForm(arac);
       this.barcode = "";
