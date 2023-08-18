@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataSource } from '../service/datasource';
 import { GradientConfig } from '../app-config';
-import { environment } from '../environment';
+import { environment } from '../../environment';
 import httpClient from '../service/http-client';
 @Component({
   selector: 'app-giris',

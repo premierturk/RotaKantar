@@ -1,6 +1,8 @@
 {
   "name": "rota-kantar",
-  "version": "1.0.0",
+  "productName": "RotaKantar",
+  "author": "Premierturk",
+  "version": "1.0.3",
   "main": "main.js",
   "scripts": {
     "ng": "ng",
@@ -10,7 +12,8 @@
     "electron": "electron .",
     "electron-serve": "concurrently \"npm:start\" \"npm:electron serve\"",
     "electronB": "ng build --base-href ./ && electron .",
-    "electron-exe": "ng build --prod && electron-builder -w"
+    "electron-exe": "ng build --prod && electron-builder -w",
+    "publish-version": "electron-builder build --win --publish always"
   },
   "browser": {
     "child_process": false,
@@ -22,7 +25,13 @@
     "directories": {
       "buildResources": "assets"
     },
+    "publish": {
+      "provider": "github",
+      "owner": "premierturk",
+      "repo": "RotaKantar"
+    },
     "win": {
+      "verifyUpdateCodeSignature": false,
       "publisherName": "Premierturk",
       "icon": "./assets/icon.ico",
       "publish": [
@@ -107,6 +116,7 @@
     "datatables.net": "^1.10.19",
     "datatables.net-dt": "^1.10.19",
     "electron-shortcut": "^0.5.0",
+    "electron-updater": "^4.6.1",
     "famfamfam-flags": "^1.0.0",
     "fs": "0.0.1-security",
     "fullcalendar": "^3.10.1",

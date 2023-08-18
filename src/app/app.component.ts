@@ -2,6 +2,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ElectronService } from 'ngx-electron';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +13,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private rout: Router, private route: ActivatedRoute) {
+  constructor(private rout: Router, private route: ActivatedRoute,
+    private _electronService: ElectronService,) {
+    if (this._electronService.ipcRenderer) {
+      this._electronService.ipcRenderer.on('update_available', this.update);
+    }
   }
 
   ngOnInit() {
@@ -23,5 +29,10 @@ export class AppComponent implements OnInit {
       if (this.rout.url == undefined || this.rout.url == "/")
         this.rout.config[0].children[0].redirectTo = "/dashboard";
     }
+  }
+
+  update() {
+    Swal.fire('Güncelleme Mevcut', 'UYARI', 'warning');
+
   }
 }

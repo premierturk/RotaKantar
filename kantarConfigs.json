@@ -1,5 +1,5 @@
 {
-    "aktifKantar": "denugKantar",
+    "aktifKantar": "debugKantar",
     "debugKantar": {
         "kantar": true,
         "printer": "Default_printer",

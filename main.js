@@ -2,22 +2,24 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const { SerialPort } = require("serialport");
 const path = require("path");
 const ptp = require("pdf-to-printer");
-const Shortcut = require("electron-shortcut");   
+const Shortcut = require("electron-shortcut");
 const fs = require('fs');
+const { autoUpdater } = require("electron-updater");
 
-var args = process.argv; 
+var args = process.argv;
 
 var resourcesRoot = fs.existsSync("./kantarConfigs.json") ? "./" : "./resources/";
 
-const jsonFile = JSON.parse(fs.readFileSync(resourcesRoot+'kantarConfigs.json'));  
+const jsonFile = JSON.parse(fs.readFileSync(resourcesRoot + 'kantarConfigs.json'));
 const config = jsonFile[jsonFile.aktifKantar];
 
- if(config==undefined){
+
+if (config == undefined) {
   throw new Error("KANTAR KONFİGÜRASYONU BULUNAMADI!");
- }
- 
-function createWindow() {
-  let mainWindow = new BrowserWindow({
+}
+let mainWindow;
+async function createWindow() {
+  mainWindow = new BrowserWindow({
     show: false,
     webPreferences: {
       nodeIntegration: true,
@@ -26,15 +28,14 @@ function createWindow() {
       backgroundThrottling: false,
       preload: path.join(__dirname, "preload.js"),
     },
-    icon:path.join(__dirname, "assets/icon.ico") 
+    icon: path.join(__dirname, "assets/icon.ico")
   });
-
   mainWindow.setMenu(null);
+  mainWindow.setTitle("Rota Kantar v" + app.getVersion());
 
   new Shortcut("Ctrl+F12", function (e) {
     mainWindow.webContents.openDevTools();
   });
-
   //Serialport
   if (config.kantar) {
     const port = new SerialPort(config.serialPort);
@@ -52,7 +53,7 @@ function createWindow() {
     var currMessage = "";
     var messages = [];
     port.on("data", function (data) {
-      currMessage += new Buffer.from(data).toString();
+      currMessage += Buffer.from(data).toString();
       if (currMessage.endsWith("\\n")) {
         currMessage = currMessage.replace("\\n", "");
         console.log("Data:", currMessage);
@@ -76,24 +77,54 @@ function createWindow() {
   }
 
   mainWindow.maximize();
-
   if (args.includes("serve")) {
     mainWindow.loadURL("http://localhost:4200");
   } else {
     mainWindow.loadURL(`file://${__dirname}/out/rota-kantar/index.html`)
   }
+  var a = await autoUpdater.checkForUpdates();
+  console.log(a);
 }
 
-app.on("ready", createWindow);
-
 app.allowRendererProcessReuse = false;
-
+app.on("ready", createWindow);
 app.on("window-all-closed", function () {
   app.quit();
 });
 
 app.on("activate", function () {
   if (mainWindow === null) createWindow();
+});
+
+autoUpdater.on("update-available", () => {
+  mainWindow.webContents.send("update_available");
+  //console.log("yes")
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  console.log(progressObj.percent);
+
+  let log_message = "Hız: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - İndirilen ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  mainWindow.webContents.send("download-progress", { text: log_message, data: progressObj });
+});
+
+autoUpdater.on("update-downloaded", () => {
+  mainWindow.webContents.send("update_downloaded");
+});
+
+autoUpdater.on("error", (message) => {
+  console.error("There was a problem updating the application");
+  console.error(message);
+});
+
+ipcMain.on("app_version", (event) => {
+  event.sender.send("app_version", { version: app.getVersion() });
+});
+
+ipcMain.on("restart_app", () => {
+  autoUpdater.quitAndInstall();
 });
 
 ipcMain.on("restart", async (event, data) => {

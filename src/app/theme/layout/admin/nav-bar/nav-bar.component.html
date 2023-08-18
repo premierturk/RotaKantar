@@ -3,13 +3,8 @@
   <ng-container *ngTemplateOutlet="mainHeader"></ng-container>
 </div>
 <ng-template #mainHeader>
-  <div class="m-header">
-    <!-- <a href="javascript:" class="mobile-menu" id="mobile-collapse" (click)="navCollapse()"><span></span></a> -->
-
-    <div class="pt-2">
-      <h4 class="text-white">Rota Kantar <span class="pl-1 k-font-size-xs">v1.0.0</span></h4>
-    </div>
-
+  <div class="m-header" style="width: 18%;">
+    <img class="w-100" src="assets/images/ronesans_holding.png" alt="Ronesans Logo">
   </div>
   <div class="collapse navbar-collapse" [style.display]="this.collapseStyle">
     <app-nav-left class="mr-auto"></app-nav-left>

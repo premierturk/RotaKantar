@@ -1,16 +1,12 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef, HostListener } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup } from '@angular/forms';
-import {
-  DataStateChangeEvent,
-  GridComponent,
-  GridDataResult,
-} from '@progress/kendo-angular-grid';
+import { DataStateChangeEvent, GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
 import { State } from '@progress/kendo-data-query';
 import { HttpClient } from '@angular/common/http';
 import { ElectronService } from 'ngx-electron';
 import { ButtonType, DataSource } from 'src/app/service/datasource';
-import { environment } from 'src/app/environment';
+import { environment } from 'src/environment';
 import * as Notiflix from 'node_modules/notiflix/dist/notiflix-3.2.6.min.js';
 import Swal from 'sweetalert2';
 @Component({

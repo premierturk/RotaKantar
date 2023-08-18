@@ -1,0 +1,6 @@
+owner: premierturk
+repo: RotaKantar
+provider: github
+updaterCacheDirName: rota-kantar-updater
+publisherName:
+  - Premierturk
