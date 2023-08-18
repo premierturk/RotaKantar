@@ -1,8 +1,10 @@
 {
   "name": "rota-kantar",
   "productName": "RotaKantar",
-  "author": "Premierturk",
-  "version": "1.0.3",
+  "description": "RotaKantar",
+  "author": "premierturk",
+  "license": "CC0-1.0",
+  "version": "1.0.6",
   "main": "main.js",
   "scripts": {
     "ng": "ng",
@@ -32,19 +34,15 @@
     },
     "win": {
       "verifyUpdateCodeSignature": false,
-      "publisherName": "Premierturk",
+      "publisherName": [
+        "premierturk"
+      ],
       "icon": "./assets/icon.ico",
       "publish": [
         "github"
       ],
       "target": [
         "nsis"
-      ]
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "tar.gz"
       ]
     },
     "nsis": {
