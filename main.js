@@ -10,7 +10,11 @@ var args = process.argv;
 var resourcesRoot = fs.existsSync("./kantarConfigs.json") ? "./" : "./resources/";
 
 const jsonFile = JSON.parse(fs.readFileSync(resourcesRoot + 'kantarConfigs.json'));
-const config = jsonFile[jsonFile.aktifKantar];
+const kantarName = JSON.parse(fs.readFileSync("C:\\RotaKantarName.json")).kantarName;
+if (kantarName == "" || kantarName == undefined) {
+  throw new Error("(RotaKantarName.json) KANTAR ADI BULUNAMADI!");
+}
+const config = jsonFile[kantarName];
 
 
 if (config == undefined) {
@@ -55,14 +59,32 @@ async function createWindow() {
     var currMessage = "";
     var messages = [];
     port.on("data", function (data) {
-      currMessage += Buffer.from(data).toString();
-      if (currMessage.endsWith("\\n")) {
-        currMessage = currMessage.replace("\\n", "");
-        console.log("Data:", currMessage);
 
-        messages.push(currMessage);
+      mainWindow.webContents.send("print", data);
 
-        if (messages.length == 10) {
+      currMessage = Buffer.from(data).toString();
+
+      mainWindow.webContents.send("print", "String Data =>" + currMessage);
+
+
+      var s = currMessage;
+
+      s = s.replace("\r", "");
+      s = s.replace("\\r", "");
+      s = s.replace("A", "");
+      s = s.replace("B", "");
+      s = s.replace("C", "");
+      s = s.replace("D", "");
+      s = s.replace("J", "");
+      s = s.replaceAll(" ", "");
+
+      if (s.includes("@")) {
+        s = s.replace("@", "");
+
+        var r = parseInt(s);
+        messages.push(r);
+
+        if (messages.length == 5) {
           let allSame = [...new Set(messages)].length == 1;
 
           if (allSame) {
@@ -73,8 +95,35 @@ async function createWindow() {
             messages = messages.slice(1);
           }
         }
-        currMessage = "";
+
       }
+
+
+      // if (currMessage.endsWith('\\r') && currMessage.startsWith("@")) {
+
+      //   currMessage = currMessage.replaceAll("\\r", "");
+      //   currMessage = currMessage.replaceAll("@", "");
+      //   currMessage = currMessage.replaceAll(" ", "");
+      //   mainWindow.webContents.send("print", "Parsed => " + currMessage);
+
+      //   messages.push(currMessage);
+
+      //   if (messages.length == 5) {
+      //     let allSame = [...new Set(messages)].length == 1;
+
+      //     if (allSame) {
+      //       mainWindow.webContents.send("kantar", [messages[0]]);
+      //       console.log("Data sended => " + messages[0]);
+      //       messages = [];
+      //     } else {
+      //       messages = messages.slice(1);
+      //     }
+      //   }
+      //   currMessage = "";
+      // } else {
+      //   mainWindow.webContents.send("kantar", ["0"]);
+      //   currMessage = "";
+      // }
     });
   }
 

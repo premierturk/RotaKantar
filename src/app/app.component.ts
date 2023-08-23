@@ -15,14 +15,14 @@ export class AppComponent implements OnInit {
 
   constructor(private rout: Router, private route: ActivatedRoute,
     private _electronService: ElectronService,) {
-    // if (this._electronService.ipcRenderer) {
-    //   this._electronService.ipcRenderer.on('update_available', this.update);
-    //   this._electronService.ipcRenderer.on('print', this.printAll);
-    // }
+    if (this._electronService.ipcRenderer) {
+      // this._electronService.ipcRenderer.on('update_available', this.update);
+      this._electronService.ipcRenderer.on('print', this.printAll);
+    }
   }
-  // printAll(event, data) {
-  //   console.log(data);
-  // }
+  printAll(event, data) {
+    console.log(data);
+  }
 
   // update() {
   //   Swal.fire('Güncelleme Mevcut', 'UYARI', 'warning');
