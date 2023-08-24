@@ -62,27 +62,18 @@ async function createWindow() {
 
       mainWindow.webContents.send("print", data);
 
-      currMessage = Buffer.from(data).toString();
+      currMessage += Buffer.from(data).toString();
 
       mainWindow.webContents.send("print", "String Data =>" + currMessage);
 
+      if (currMessage.endsWith('\r') && currMessage.startsWith("@")) {
 
-      var s = currMessage;
+        currMessage = currMessage.replaceAll("\r", "");
+        currMessage = currMessage.replaceAll("@", "");
+        currMessage = currMessage.replaceAll(" ", "");
+        mainWindow.webContents.send("print", "Parsed => " + currMessage);
 
-      s = s.replace("\r", "");
-      s = s.replace("\\r", "");
-      s = s.replace("A", "");
-      s = s.replace("B", "");
-      s = s.replace("C", "");
-      s = s.replace("D", "");
-      s = s.replace("J", "");
-      s = s.replaceAll(" ", "");
-
-      if (s.includes("@")) {
-        s = s.replace("@", "");
-
-        var r = parseInt(s);
-        messages.push(r);
+        messages.push(currMessage);
 
         if (messages.length == 5) {
           let allSame = [...new Set(messages)].length == 1;
@@ -95,35 +86,11 @@ async function createWindow() {
             messages = messages.slice(1);
           }
         }
-
+        currMessage = "";
+      } else if (currMessage.endsWith('\r')) {
+        mainWindow.webContents.send("kantar", ["0"]);
+        currMessage = "";
       }
-
-
-      // if (currMessage.endsWith('\\r') && currMessage.startsWith("@")) {
-
-      //   currMessage = currMessage.replaceAll("\\r", "");
-      //   currMessage = currMessage.replaceAll("@", "");
-      //   currMessage = currMessage.replaceAll(" ", "");
-      //   mainWindow.webContents.send("print", "Parsed => " + currMessage);
-
-      //   messages.push(currMessage);
-
-      //   if (messages.length == 5) {
-      //     let allSame = [...new Set(messages)].length == 1;
-
-      //     if (allSame) {
-      //       mainWindow.webContents.send("kantar", [messages[0]]);
-      //       console.log("Data sended => " + messages[0]);
-      //       messages = [];
-      //     } else {
-      //       messages = messages.slice(1);
-      //     }
-      //   }
-      //   currMessage = "";
-      // } else {
-      //   mainWindow.webContents.send("kantar", ["0"]);
-      //   currMessage = "";
-      // }
     });
   }
 
