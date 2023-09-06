@@ -2973,7 +2973,7 @@ $style-block-width: 400px;
         $i: index($color-header-name, $value);
 
         &.header-#{$value} {
-            background: linear-gradient(to right, rgba(256, 256, 256, 0.8), rgba(0, 47, 101, 1));
+            background: linear-gradient(to right, rgba(256, 256, 256, 0.8), #0d4c92);
             color: rgba(256, 256, 256, 0.8);
 
             .profile-notification {

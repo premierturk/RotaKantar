@@ -19,12 +19,9 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { ButtonComponent } from './components/button/button.component';
 import { NgbDropdownModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { PopupModule } from '@progress/kendo-angular-popup';
-import { ToolBarModule } from '@progress/kendo-angular-toolbar';
-import { TreeViewModule } from '@progress/kendo-angular-treeview';
 import { UploadModule } from '@progress/kendo-angular-upload';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
-import { TelerikReportingModule } from '@progress/telerik-angular-report-viewer';
-
+import { ProgressBarModule } from '@progress/kendo-angular-progressbar';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -51,11 +48,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     DropDownsModule,
     NgbDropdownModule,
     NgbTooltipModule,
-    PopupModule,
-    ToolBarModule,
-    TreeViewModule,
+    PopupModule, ProgressBarModule,
     UploadModule,
-    TelerikReportingModule,
     DialogsModule,
   ],
   exports: [
@@ -74,7 +68,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     GridModule,
     ExcelModule,
     PDFModule,
-    LabelModule,
+    LabelModule, ProgressBarModule,
     InputsModule,
     ButtonComponent,
     DialogModule,
@@ -82,10 +76,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgbDropdownModule,
     NgbTooltipModule,
     PopupModule,
-    ToolBarModule,
-    TreeViewModule,
     UploadModule,
-    TelerikReportingModule,
     DialogsModule,
   ],
   declarations: [

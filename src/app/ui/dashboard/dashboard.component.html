@@ -1,16 +1,10 @@
 <div class="row">
     <app-card id="grid-card" class="col-md-8 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
         style="padding : 0px 5px;">
-        <kendo-grid #grid [data]="view" [selectable]="true" [navigable]="true" [pageSize]="state.take" [size]="'medium'"
-            [sortable]="true" [group]="state.group" [filter]="state.filter" [sort]="state.sort" [pageable]="true"
-            [filterable]="true" [resizable]="true" kendoGridSelectBy="KantarId"
-            (dataStateChange)="dataStateChange($event)">
-            <!-- <kendo-grid-column [width]="50" title="No">
-                <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
-                    {{ rowIndex + 1 }}
-                </ng-template>
-            </kendo-grid-column> -->
-            <kendo-grid-column title="Firma Adı " field="FirmaAdi"
+        <kendo-grid #grid [data]="view" [selectable]="true" [navigable]="true" [pageSize]="state.take" [size]="'small'"
+            [skip]="state.skip" [sortable]="true" [group]="state.group" [filter]="state.filter" [sort]="state.sort"
+            [pageable]="true" [filterable]="true" [resizable]="true" (dataStateChange)="dataStateChange($event)">
+            <kendo-grid-column title="Firma Adı" field="FirmaAdi"
                 [style]="{'white-space': 'nowrap'}"></kendo-grid-column>
             <kendo-grid-column title="Alan Adı" field="AlanAdi" [style]="{'white-space': 'nowrap'}"></kendo-grid-column>
             <kendo-grid-column title="Malzeme Türü" field="MalzemeTuru"
@@ -18,7 +12,6 @@
             <kendo-grid-column [width]="100" title="Plaka" field="PlakaNo"></kendo-grid-column>
             <kendo-grid-column [width]="100" title="Dara" field="Dara"
                 [style]="{'white-space': 'nowrap'}"></kendo-grid-column>
-            <!-- <kendo-grid-column title="Tonaj" field="Tonaj"></kendo-grid-column> -->
             <kendo-grid-column [width]="100" title="Net Tonaj" field="NetTonaj"></kendo-grid-column>
             <kendo-grid-column [width]="145" title="Tarih" field="TarihSaat">
                 <ng-template kendoGridCellTemplate let-dataItem="dataItem">
@@ -36,6 +29,13 @@
                     [data]="f_dsPlaka" [textField]="'PlakaNo'" [valueField]="'AracId'" [valuePrimitive]="true"
                     (filterChange)="handleFilterArac($event)" [(ngModel)]="formData.AracId"
                     (valueChange)="plakaSelected($event)">
+                </kendo-dropdownlist>
+            </div>
+            <div class="form-group">
+                <label>Taş Ocağı</label>
+                <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
+                    [data]="f_dsTasOcaklari" [textField]="'Adi'" [valueField]="'TasOcagiId'" [valuePrimitive]="true"
+                    (filterChange)="handleFilterTasOcak($event)" [(ngModel)]="formData.TasOcagiId">
                 </kendo-dropdownlist>
             </div>
             <div class="form-group">
@@ -66,8 +66,15 @@
             </div>
         </div>
         <div class="modal-footer" style="justify-content: center;">
-            <app-button [buttonType]="ButtonType.Kaydet" (onclick)="save()"></app-button>
+            <app-button [buttonType]="ButtonType.Kaydet" (onclick)="save()" [isdisabled]="isLoading==true"></app-button>
             <!-- <button class="btn btn-warning" (click)="clearForm()"> Temizle</button> -->
+        </div>
+        <div [hidden]="!isLoading">
+            <div class="d-flex justify-content-center mb-2">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
         </div>
     </app-card>
 </div>

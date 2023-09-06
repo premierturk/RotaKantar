@@ -27,7 +27,7 @@ export class DataSource {
         content: errorMessage,
         actions: [{ text: 'Tamam', primary: true }],
       })
-      .result.subscribe((result) => {});
+      .result.subscribe((result) => { });
   }
   async login(url: string, data: any) {
     try {
@@ -61,15 +61,17 @@ export class DataSource {
   async post(url: string, data: any) {
     try {
       const resp = await httpClient.post(url, data);
+      var success = false;
       if (resp.status == 200) {
+        success = true;
         Notiflix.Notify.success('Başarılı');
       } else {
         Notiflix.Notify.failure(data);
       }
-      return resp.data;
+      return success;
     } catch (err) {
       this.handleErrorResponse(err);
-      return err;
+      return false;
     }
   }
   async put(url: string, data: any) {
@@ -120,9 +122,6 @@ export class DataSource {
       } else if (error.response.status == '500') {
         //Server Error
         errorResponse = error.response.data.errorMessage;
-        if (errorResponse == 'Lütfen Şifrenizi Değiştirin') {
-          this.router.navigate(['sifredegistir']);
-        }
         if (errorResponse.InnerException) {
           errorResponse = 'Beklenmedik bir hata oluştu';
         }

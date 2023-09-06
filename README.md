@@ -10,3 +10,5 @@
     - environment.production -> true
     - npm run electronB (with ng build)
     - npm run electron (son build dosyasından electron açılır)
+
+ 

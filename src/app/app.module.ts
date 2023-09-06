@@ -16,9 +16,7 @@ import { NavCollapseComponent } from './theme/layout/admin/navigation/nav-conten
 import { NavItemComponent } from './theme/layout/admin/navigation/nav-content/nav-item/nav-item.component';
 import { NavBarComponent } from './theme/layout/admin/nav-bar/nav-bar.component';
 import { ConfigurationComponent } from './theme/layout/admin/configuration/configuration.component';
-import { ToggleFullScreenDirective } from './theme/shared/full-screen/toggle-full-screen';
 
-import { LightboxModule } from 'ngx-lightbox';
 
 /* Menu Items */
 import { NavigationItem } from './theme/layout/admin/navigation/navigation';
@@ -32,7 +30,8 @@ import { NavLeftComponent } from './theme/layout/admin/nav-bar/nav-left/nav-left
 import { NavRightComponent } from './theme/layout/admin/nav-bar/nav-right/nav-right.component';
 import '@progress/kendo-angular-intl/locales/tr/all';
 import '@progress/kendo-angular-intl/locales/tr/calendar';
-import "hammerjs";
+import { UpdateModalComponent } from './update-modal/update-modal.component';
+
 
 
 
@@ -53,7 +52,7 @@ registerLocaleData(LocaleTr);
     NavItemComponent,
     NavBarComponent,
     ConfigurationComponent,
-    ToggleFullScreenDirective,
+    UpdateModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,7 +62,6 @@ registerLocaleData(LocaleTr);
     NgbDropdownModule,
     NgbTooltipModule,
     IntlModule,
-    LightboxModule
   ],
   providers: [
     NavigationItem,

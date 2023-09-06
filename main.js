@@ -4,7 +4,7 @@ const path = require("path");
 const ptp = require("pdf-to-printer");
 const Shortcut = require("electron-shortcut");
 const fs = require('fs');
-//const { autoUpdater } = require("electron-updater");
+const { autoUpdater } = require("electron-updater");
 var args = process.argv;
 
 var resourcesRoot = fs.existsSync("./kantarConfigs.json") ? "./" : "./resources/";
@@ -39,9 +39,7 @@ async function createWindow() {
   new Shortcut("Ctrl+F12", function (e) {
     mainWindow.webContents.openDevTools();
   });
-  // new Shortcut("Ctrl+F5", function (e) {
-  //   mainWindow.reload();
-  // });
+
   //Serialport
   if (config.kantar) {
     const port = new SerialPort(config.serialPort);
@@ -66,8 +64,8 @@ async function createWindow() {
 
       mainWindow.webContents.send("print", "String Data =>" + currMessage);
 
-      if (currMessage.endsWith('\r') && currMessage.startsWith("@")) {
-
+      if ((currMessage.endsWith('\r') || currMessage.endsWith('\\r')) && currMessage.startsWith("@")) {
+        currMessage = currMessage.replaceAll("\\r", "");
         currMessage = currMessage.replaceAll("\r", "");
         currMessage = currMessage.replaceAll("@", "");
         currMessage = currMessage.replaceAll(" ", "");
@@ -91,6 +89,7 @@ async function createWindow() {
         mainWindow.webContents.send("kantar", ["0"]);
         currMessage = "";
       }
+      if (currMessage.length > 50) currMessage = "";
     });
   }
 
@@ -100,8 +99,13 @@ async function createWindow() {
   } else {
     mainWindow.loadURL(`file://${__dirname}/out/rota-kantar/index.html`)
   }
-  // var a = await autoUpdater.checkForUpdates();
-  // console.log(a);
+
+  setTimeout(
+    () => {
+      autoUpdater.checkForUpdates();
+    },
+    4000
+  );
 }
 
 app.allowRendererProcessReuse = false;
@@ -114,36 +118,36 @@ app.on("activate", function () {
   if (mainWindow === null) createWindow();
 });
 
-// autoUpdater.on("update-available", () => {
-//   mainWindow.webContents.send("update_available");
-//   mainWindow.webContents.send("print", "update_available");
-// });
+autoUpdater.on("update-available", () => {
+  mainWindow.webContents.send("update_available");
+  mainWindow.webContents.send("print", "update_available");
+});
 
-// autoUpdater.on('download-progress', (progressObj) => {
-//   console.log(progressObj.percent);
+autoUpdater.on('download-progress', (progressObj) => {
+  console.log(progressObj.percent);
 
-//   let log_message = "Hız: " + progressObj.bytesPerSecond;
-//   log_message = log_message + ' - İndirilen ' + progressObj.percent + '%';
-//   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-//   mainWindow.webContents.send("download-progress", { text: log_message, data: progressObj });
-//   mainWindow.webContents.send("print", { text: log_message, data: progressObj });
-// });
+  let log_message = "Hız: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - İndirilen ' + progressObj.percent + '%';
+  mainWindow.webContents.send("download_progress", { text: log_message, data: progressObj });
+  mainWindow.webContents.send("print", log_message);
+});
 
-// autoUpdater.on("update-downloaded", () => {
-//   mainWindow.webContents.send("update_downloaded");
-// });
+autoUpdater.on("update-downloaded", () => {
+  mainWindow.webContents.send("print", "update-downloaded");
+  mainWindow.webContents.send("update_downloaded");
+});
 
-// autoUpdater.on("error", (message) => {
-//   mainWindow.webContents.send("print", message);
-// });
+autoUpdater.on("error", (message) => {
+  mainWindow.webContents.send("print", message);
+});
 
 ipcMain.on("app_version", (event) => {
   event.sender.send("app_version", { version: app.getVersion() });
 });
 
-// ipcMain.on("restart_app", () => {
-//   autoUpdater.quitAndInstall();
-// });
+ipcMain.on("restart_update", () => {
+  autoUpdater.quitAndInstall();
+});
 
 ipcMain.on("restart", async (event, data) => {
   app.exit();

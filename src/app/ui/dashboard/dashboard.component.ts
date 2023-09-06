@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ChangeDetectorRef, HostListener } from '@
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup } from '@angular/forms';
 import { DataStateChangeEvent, GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
-import { State } from '@progress/kendo-data-query';
+import { State, process } from '@progress/kendo-data-query';
 import { HttpClient } from '@angular/common/http';
 import { ElectronService } from 'ngx-electron';
 import { ButtonType, DataSource } from 'src/app/service/datasource';
@@ -24,41 +24,37 @@ export class DashboardComponent implements OnInit {
     private ref: ChangeDetectorRef,
     private ds: DataSource
   ) {
+    DashboardComponent.componentInstance = this;
     if (this._electronService.ipcRenderer) {
       this._electronService.ipcRenderer.on('kantar', this.onDataKantar);
     }
-    DashboardComponent.componentInstance = this;
   }
   private url: string = environment.production ? environment.apiUrl : '/api';
   @ViewChild('grid') grid: GridComponent;
   public view: GridDataResult;
+  public list: any[];
   public form: FormGroup;
   public ButtonType = ButtonType;
   public state: State = {
     skip: 0,
-    take: 17,
-    sort: [
-      {
-        field: 'siraNo',
-        dir: 'asc',
-      },
-    ],
+    take: 20,
   };
 
-  public formData: any = { FirmaAdi: '', Tonaj: 0 };
-  public defaultForm: any = {};
+  public formData: any = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
   public dsPlaka: Array<any> = [];
   public dsMalzemeTur: Array<any> = [];
+  public dsTasOcaklari: Array<any> = [];
   public f_dsPlaka: Array<any> = [];
   public f_dsMalzemeTur: Array<any> = [];
+  public f_dsTasOcaklari: Array<any> = [];
   public saveDisabled: boolean = false;
   public barcode: string = "";
-
+  public isLoading: boolean = false;
   public user: any;
   ngOnInit(): void {
     this.BindGrid();
     this.BindForm();
-    Swal.fire('Bilgilendirme', 'TEST', 'warning');
+    //Swal.fire('Bilgilendirme', 'TEST', 'warning');
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -81,8 +77,13 @@ export class DashboardComponent implements OnInit {
     component.ref.detectChanges();
   }
 
-  public plakaSelected(a) {
+  public async plakaSelected(a) {
     const arac = this.dsPlaka.filter((x) => x.AracId == a)[0];
+    const res = await this.ds.get(`${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`);
+    this.formData.TasOcagiId = res.TasOcagiId;
+    this.formData.TasOcagiGirisTarihi = res.TasOcagiGirisTarihi;
+    this.formData.Latitude = res.Latitude;
+    this.formData.Longitude = res.Longitude;
     this.fillForm(arac);
   }
 
@@ -95,26 +96,26 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  public clearForm() {
-    this.formData = this.defaultForm;
-  }
 
   public async BindForm() {
+    this.user = JSON.parse(localStorage.getItem('user'));
     this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
     this.handleFilterArac('');
     this.dsMalzemeTur = await this.ds.get(`${this.url}/api/MalzemeTuruList`);
     this.handleFilterMalzeme('');
+    this.dsTasOcaklari = await this.ds.get(`${this.url}/api/Kantar/TasOcaklariMini?ProjeId=${this.user.ProjeId}`);
+    this.handleFilterTasOcak('');
 
-    this.user = JSON.parse(localStorage.getItem('user'));
   }
 
   public async BindGrid() {
-    this.view = await this.ds.get(`${this.url}/api/KantarList`);
+    this.list = await this.ds.get(`${this.url}/api/KantarList`);
+    this.view = process(this.list, this.state);
   }
 
   public dataStateChange(state: DataStateChangeEvent): void {
     this.state = state;
-    this.BindGrid();
+    this.view = process(this.list, this.state);
   }
 
   public handleFilterArac(keyword) {
@@ -129,21 +130,30 @@ export class DashboardComponent implements OnInit {
     );
   }
 
+  public handleFilterTasOcak(keyword) {
+    this.f_dsTasOcaklari = this.dsTasOcaklari.filter((x) =>
+      x.Adi.toUpperCase().includes(keyword.toUpperCase())
+    );
+  }
+
   async save() {
-    this.formData.TasOcagiId = this.user.TasOcagiId;
+    this.formData.ProjeId = this.user.ProjeId;
     var err = this.validations();
     if (err != '') {
       Notiflix.Notify.failure(err);
       return;
     }
+    this.isLoading = true;
     var result = await this.ds.post(
       `${this.url}/api/Kantar`,
       this.formData
     );
+    this.isLoading = false;
     if (result) {
-      this.clearForm();
+      this.formData = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
       this.BindGrid();
     }
+
   }
 
   public validations(): string {
