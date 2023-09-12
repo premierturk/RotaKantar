@@ -1,26 +1,40 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
+const Shortcut = require("electron-shortcut");
+const { autoUpdater } = require("electron-updater");
 const { SerialPort } = require("serialport");
 const path = require("path");
-const ptp = require("pdf-to-printer");
-const Shortcut = require("electron-shortcut");
 const fs = require('fs');
-const { autoUpdater } = require("electron-updater");
+const ptp = require("pdf-to-printer");
+const moment = require("moment/moment");
+const html_to_pdf = require('html-pdf-node');
+
+class AppFiles {
+  static kantarConfigs = `kantarConfigs.json`;
+  static kantarName = "C:\\RotaKantarName.json";
+  static pdfTempHtml = "pdf/template.html";
+  static pdfOutput = "pdf/output.pdf";
+
+  static initRoutes() {
+    const root = !app.isPackaged ? "./" : "./resources/";
+    this.kantarConfigs = path.join(root + this.kantarConfigs);
+    this.pdfDataXml = path.join(root + this.pdfDataXml);
+    this.pdfTempHtml = path.join(root + this.pdfTempHtml);
+    this.pdfOutput = path.join(root + this.pdfOutput);
+  }
+}
+
+AppFiles.initRoutes();
+
+const configJsonFile = JSON.parse(fs.readFileSync(AppFiles.kantarConfigs));
+const kantarName = JSON.parse(fs.readFileSync(AppFiles.kantarName)).kantarName;
+if (kantarName == "" || kantarName == undefined) throw new Error("(RotaKantarName.json) KANTAR ADI BULUNAMADI!");
+
+const config = configJsonFile[kantarName];
+if (config == undefined) throw new Error("KANTAR KONFİGÜRASYONU BULUNAMADI!");
+
+let mainWindow;
 var args = process.argv;
 
-var resourcesRoot = fs.existsSync("./kantarConfigs.json") ? "./" : "./resources/";
-
-const jsonFile = JSON.parse(fs.readFileSync(resourcesRoot + 'kantarConfigs.json'));
-const kantarName = JSON.parse(fs.readFileSync("C:\\RotaKantarName.json")).kantarName;
-if (kantarName == "" || kantarName == undefined) {
-  throw new Error("(RotaKantarName.json) KANTAR ADI BULUNAMADI!");
-}
-const config = jsonFile[kantarName];
-
-
-if (config == undefined) {
-  throw new Error("KANTAR KONFİGÜRASYONU BULUNAMADI!");
-}
-let mainWindow;
 async function createWindow() {
   mainWindow = new BrowserWindow({
     show: false,
@@ -65,10 +79,9 @@ async function createWindow() {
       mainWindow.webContents.send("print", "String Data =>" + currMessage);
 
       if ((currMessage.endsWith('\r') || currMessage.endsWith('\\r')) && currMessage.startsWith("@")) {
-        currMessage = currMessage.replaceAll("\\r", "");
-        currMessage = currMessage.replaceAll("\r", "");
-        currMessage = currMessage.replaceAll("@", "");
-        currMessage = currMessage.replaceAll(" ", "");
+
+        currMessage = currMessage.replaceAll("\\r", "").replaceAll("\r", "").replaceAll("@", "").replaceAll(" ", "");
+
         mainWindow.webContents.send("print", "Parsed => " + currMessage);
 
         messages.push(currMessage);
@@ -118,6 +131,39 @@ app.on("activate", function () {
   if (mainWindow === null) createWindow();
 });
 
+ipcMain.on("restart_update", () => {
+  autoUpdater.quitAndInstall();
+});
+
+ipcMain.on("onprint", async (event, data) => {
+  data = data[0];
+  data.DaraTarih = moment(data.DaraTarih).format("DD.MM.yyyy HH:mm");
+  data.TartiTarih = moment(data.TartiTarih).format("DD.MM.yyyy HH:mm");
+
+  var htmlFile = fs.readFileSync(AppFiles.pdfTempHtml, "utf-8");
+
+  for (const [key, value] of Object.entries(data)) htmlFile = htmlFile.replaceAll(`#${key}#`, value);
+
+  const pdfOptions = { format: 'A5' };
+  await html_to_pdf.generatePdf({ content: htmlFile }, pdfOptions).then(pdfBuffer => {
+    fs.writeFile(AppFiles.pdfOutput, pdfBuffer, "utf-8", async (err, res) => {
+      if (err) console.log(err);
+
+      var printerList = await ptp.getPrinters();
+      const printer = printerList.find(a => a.name.includes(config.printer));
+
+      if (printer == undefined || printer == null) {
+        throw new Error("YAZICI BULUNAMADI!");
+      }
+      const printOptions = {
+        printer: printer.deviceId,
+      };
+      await ptp.print(AppFiles.pdfOutput, printOptions);
+    });
+  });
+
+});
+
 autoUpdater.on("update-available", () => {
   mainWindow.webContents.send("update_available");
   mainWindow.webContents.send("print", "update_available");
@@ -139,26 +185,4 @@ autoUpdater.on("update-downloaded", () => {
 
 autoUpdater.on("error", (message) => {
   mainWindow.webContents.send("print", message);
-});
-
-ipcMain.on("app_version", (event) => {
-  event.sender.send("app_version", { version: app.getVersion() });
-});
-
-ipcMain.on("restart_update", () => {
-  autoUpdater.quitAndInstall();
-});
-
-ipcMain.on("restart", async (event, data) => {
-  app.exit();
-  app.relaunch();
-});
-
-const options = {
-  printer: config.printer,
-};
-
-ipcMain.on("onprint", async (event, data) => {
-  const filePath = path.join(`./CV_Deniz_Arda_Murat.pdf`);
-  await ptp.print(filePath, options);
 });

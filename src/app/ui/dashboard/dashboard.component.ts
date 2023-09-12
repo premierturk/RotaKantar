@@ -62,7 +62,9 @@ export class DashboardComponent implements OnInit {
     if (event.key == "Enter") {
       console.log(this.barcode);
       const arac = this.dsPlaka.filter((x) => this.barcode.toLocaleUpperCase().includes(x.PlakaNo))[0];
-      this.fillForm(arac);
+      if (arac != undefined && arac != null) {
+        this.plakaSelected(arac.AracId);
+      }
       this.barcode = "";
       return;
     }
@@ -79,7 +81,9 @@ export class DashboardComponent implements OnInit {
 
   public async plakaSelected(a) {
     const arac = this.dsPlaka.filter((x) => x.AracId == a)[0];
+    this.isLoading = true;
     const res = await this.ds.get(`${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`);
+    this.isLoading = false;
     this.formData.TasOcagiId = res.TasOcagiId;
     this.formData.TasOcagiGirisTarihi = res.TasOcagiGirisTarihi;
     this.formData.Latitude = res.Latitude;
@@ -149,7 +153,10 @@ export class DashboardComponent implements OnInit {
       this.formData
     );
     this.isLoading = false;
-    if (result) {
+    if (result.success) {
+      if (this._electronService.ipcRenderer)
+        this._electronService.ipcRenderer.send("onprint", [result.data]);
+
       this.formData = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
       this.BindGrid();
     }

@@ -63,15 +63,16 @@ export class DataSource {
       const resp = await httpClient.post(url, data);
       var success = false;
       if (resp.status == 200) {
+        debugger;
         success = true;
         Notiflix.Notify.success('Başarılı');
       } else {
         Notiflix.Notify.failure(data);
       }
-      return success;
+      return { success: success, data: resp.data };
     } catch (err) {
       this.handleErrorResponse(err);
-      return false;
+      return { success: success };
     }
   }
   async put(url: string, data: any) {

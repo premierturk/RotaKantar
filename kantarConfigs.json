@@ -1,7 +1,7 @@
 {
     "debugKantar": {
         "kantar": true,
-        "printer": "Default_printer",
+        "printer": "EPSON",
         "serialPort": {
             "path": "COM14",
             "autoOpen": false,
