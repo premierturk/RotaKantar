@@ -3,10 +3,10 @@ const Shortcut = require("electron-shortcut");
 const { autoUpdater } = require("electron-updater");
 const { SerialPort } = require("serialport");
 const path = require("path");
-const fs = require('fs');
+const fs = require("fs");
 const ptp = require("pdf-to-printer");
 const moment = require("moment/moment");
-const html_to_pdf = require('html-pdf-node');
+const html_to_pdf = require("html-pdf-node");
 
 class AppFiles {
   static kantarConfigs = `kantarConfigs.json`;
@@ -27,7 +27,8 @@ AppFiles.initRoutes();
 
 const configJsonFile = JSON.parse(fs.readFileSync(AppFiles.kantarConfigs));
 const kantarName = JSON.parse(fs.readFileSync(AppFiles.kantarName)).kantarName;
-if (kantarName == "" || kantarName == undefined) throw new Error("(RotaKantarName.json) KANTAR ADI BULUNAMADI!");
+if (kantarName == "" || kantarName == undefined)
+  throw new Error("(RotaKantarName.json) KANTAR ADI BULUNAMADI!");
 
 const config = configJsonFile[kantarName];
 if (config == undefined) throw new Error("KANTAR KONFİGÜRASYONU BULUNAMADI!");
@@ -45,7 +46,7 @@ async function createWindow() {
       backgroundThrottling: false,
       preload: path.join(__dirname, "preload.js"),
     },
-    icon: path.join(__dirname, "assets/icon.ico")
+    icon: path.join(__dirname, "assets/icon.ico"),
   });
   mainWindow.setMenu(null);
   mainWindow.setTitle("Rota Kantar v" + app.getVersion());
@@ -71,16 +72,21 @@ async function createWindow() {
     var currMessage = "";
     var messages = [];
     port.on("data", function (data) {
-
-      mainWindow.webContents.send("print", data);
+      //mainWindow.webContents.send("print", data);
 
       currMessage += Buffer.from(data).toString();
 
       mainWindow.webContents.send("print", "String Data =>" + currMessage);
 
-      if ((currMessage.endsWith('\r') || currMessage.endsWith('\\r')) && currMessage.startsWith("@")) {
-
-        currMessage = currMessage.replaceAll("\\r", "").replaceAll("\r", "").replaceAll("@", "").replaceAll(" ", "");
+      if (
+        (currMessage.endsWith("\r") || currMessage.endsWith("\\r")) &&
+        currMessage.startsWith("@")
+      ) {
+        currMessage = currMessage
+          .replaceAll("\\r", "")
+          .replaceAll("\r", "")
+          .replaceAll("@", "")
+          .replaceAll(" ", "");
 
         mainWindow.webContents.send("print", "Parsed => " + currMessage);
 
@@ -98,7 +104,7 @@ async function createWindow() {
           }
         }
         currMessage = "";
-      } else if (currMessage.endsWith('\r')) {
+      } else if (currMessage.endsWith("\r")) {
         mainWindow.webContents.send("kantar", ["0"]);
         currMessage = "";
       }
@@ -110,15 +116,12 @@ async function createWindow() {
   if (args.includes("serve")) {
     mainWindow.loadURL("http://localhost:4200");
   } else {
-    mainWindow.loadURL(`file://${__dirname}/out/rota-kantar/index.html`)
+    mainWindow.loadURL(`file://${__dirname}/out/rota-kantar/index.html`);
   }
 
-  setTimeout(
-    () => {
-      autoUpdater.checkForUpdates();
-    },
-    4000
-  );
+  setTimeout(() => {
+    autoUpdater.checkForUpdates();
+  }, 4000);
 }
 
 app.allowRendererProcessReuse = false;
@@ -136,32 +139,47 @@ ipcMain.on("restart_update", () => {
 });
 
 ipcMain.on("onprint", async (event, data) => {
-  data = data[0];
-  data.DaraTarih = moment(data.DaraTarih).format("DD.MM.yyyy HH:mm");
-  data.TartiTarih = moment(data.TartiTarih).format("DD.MM.yyyy HH:mm");
+  try {
+    mainWindow.webContents.send("print", "ONPRİNT");
+    data = data[0];
+    data.DaraTarih = moment(data.DaraTarih).format("DD.MM.yyyy HH:mm");
+    data.TartiTarih = moment(data.TartiTarih).format("DD.MM.yyyy HH:mm");
+    mainWindow.webContents.send("print", data);
+    var htmlFile = fs.readFileSync(AppFiles.pdfTempHtml, "utf-8");
+    for (const [key, value] of Object.entries(data))
+      htmlFile = htmlFile.replaceAll(`#${key}#`, value);
+    const pdfOptions = { format: "A5" };
+    mainWindow.webContents.send("print", "generating pdf");
+    await html_to_pdf
+      .generatePdf({ content: htmlFile }, pdfOptions)
+      .then((pdfBuffer) => {
+        fs.writeFile(
+          AppFiles.pdfOutput,
+          pdfBuffer,
+          "utf-8",
+          async (err, res) => {
+            mainWindow.webContents.send("print", "pdf generated");
 
-  var htmlFile = fs.readFileSync(AppFiles.pdfTempHtml, "utf-8");
+            if (err) console.log(err);
+            var printerList = await ptp.getPrinters();
+            const printer = printerList.find((a) =>
+              a.name.includes(config.printer)
+            );
+            if (printer == undefined || printer == null) {
+              throw new Error("YAZICI BULUNAMADI!");
+            }
+            const printOptions = {
+              printer: printer.deviceId,
+            };
+            mainWindow.webContents.send("print", "printing");
 
-  for (const [key, value] of Object.entries(data)) htmlFile = htmlFile.replaceAll(`#${key}#`, value);
-
-  const pdfOptions = { format: 'A5' };
-  await html_to_pdf.generatePdf({ content: htmlFile }, pdfOptions).then(pdfBuffer => {
-    fs.writeFile(AppFiles.pdfOutput, pdfBuffer, "utf-8", async (err, res) => {
-      if (err) console.log(err);
-
-      var printerList = await ptp.getPrinters();
-      const printer = printerList.find(a => a.name.includes(config.printer));
-
-      if (printer == undefined || printer == null) {
-        throw new Error("YAZICI BULUNAMADI!");
-      }
-      const printOptions = {
-        printer: printer.deviceId,
-      };
-      await ptp.print(AppFiles.pdfOutput, printOptions);
-    });
-  });
-
+            await ptp.print(AppFiles.pdfOutput, printOptions);
+          }
+        );
+      });
+  } catch (error) {
+    mainWindow.webContents.send("print", error);
+  }
 });
 
 autoUpdater.on("update-available", () => {
@@ -169,12 +187,15 @@ autoUpdater.on("update-available", () => {
   mainWindow.webContents.send("print", "update_available");
 });
 
-autoUpdater.on('download-progress', (progressObj) => {
+autoUpdater.on("download-progress", (progressObj) => {
   console.log(progressObj.percent);
 
   let log_message = "Hız: " + progressObj.bytesPerSecond;
-  log_message = log_message + ' - İndirilen ' + progressObj.percent + '%';
-  mainWindow.webContents.send("download_progress", { text: log_message, data: progressObj });
+  log_message = log_message + " - İndirilen " + progressObj.percent + "%";
+  mainWindow.webContents.send("download_progress", {
+    text: log_message,
+    data: progressObj,
+  });
   mainWindow.webContents.send("print", log_message);
 });
 
