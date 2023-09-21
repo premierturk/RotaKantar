@@ -4,26 +4,19 @@ const { autoUpdater } = require("electron-updater");
 const { SerialPort } = require("serialport");
 const path = require("path");
 const fs = require("fs");
+const puppeteer = require("puppeteer");
+var Promise = require("bluebird");
+const hb = require("handlebars");
+const inlineCss = require("inline-css");
 const ptp = require("pdf-to-printer");
 const moment = require("moment/moment");
-const html_to_pdf = require("html-pdf-node");
 
 class AppFiles {
-  static kantarConfigs = `kantarConfigs.json`;
+  static kantarConfigs = `./kantarConfigs.json`;
   static kantarName = "C:\\RotaKantarName.json";
-  static pdfTempHtml = "pdf/template.html";
-  static pdfOutput = "pdf/output.pdf";
-
-  static initRoutes() {
-    const root = !app.isPackaged ? "./" : "./resources/";
-    this.kantarConfigs = path.join(root + this.kantarConfigs);
-    this.pdfDataXml = path.join(root + this.pdfDataXml);
-    this.pdfTempHtml = path.join(root + this.pdfTempHtml);
-    this.pdfOutput = path.join(root + this.pdfOutput);
-  }
+  static pdfTempHtml = "./pdf/template.html";
+  static pdfOutput = "./pdf/output.pdf";
 }
-
-AppFiles.initRoutes();
 
 const configJsonFile = JSON.parse(fs.readFileSync(AppFiles.kantarConfigs));
 const kantarName = JSON.parse(fs.readFileSync(AppFiles.kantarName)).kantarName;
@@ -61,22 +54,22 @@ async function createWindow() {
 
     port.open(function (err) {
       if (err) {
-        return console.log("Error opening port: ", err.message);
+        return printToAngular("Error opening port: ", err.message);
       }
     });
 
     port.on("error", function (err) {
-      console.log("Error: ", err.message);
+      printToAngular("Error: ", err.message);
     });
 
     var currMessage = "";
     var messages = [];
     port.on("data", function (data) {
-      //mainWindow.webContents.send("print", data);
+      //printToAngular( data);
 
       currMessage += Buffer.from(data).toString();
 
-      mainWindow.webContents.send("print", "String Data =>" + currMessage);
+      printToAngular("String Data =>" + currMessage);
 
       if (
         (currMessage.endsWith("\r") || currMessage.endsWith("\\r")) &&
@@ -88,7 +81,7 @@ async function createWindow() {
           .replaceAll("@", "")
           .replaceAll(" ", "");
 
-        mainWindow.webContents.send("print", "Parsed => " + currMessage);
+        printToAngular("Parsed => " + currMessage);
 
         messages.push(currMessage);
 
@@ -126,6 +119,7 @@ async function createWindow() {
 
 app.allowRendererProcessReuse = false;
 app.on("ready", createWindow);
+
 app.on("window-all-closed", function () {
   app.quit();
 });
@@ -140,70 +134,127 @@ ipcMain.on("restart_update", () => {
 
 ipcMain.on("onprint", async (event, data) => {
   try {
-    mainWindow.webContents.send("print", "ONPRİNT");
+    printToAngular("ONPRİNT");
     data = data[0];
-    data.DaraTarih = moment(data.DaraTarih).format("DD.MM.yyyy HH:mm");
+    if (data.DaraTarih != null)
+      data.DaraTarih = moment(data.DaraTarih).format("DD.MM.yyyy HH:mm");
+    else data.DaraTarih = "";
+
     data.TartiTarih = moment(data.TartiTarih).format("DD.MM.yyyy HH:mm");
-    mainWindow.webContents.send("print", data);
+
+    printToAngular(data);
     var htmlFile = fs.readFileSync(AppFiles.pdfTempHtml, "utf-8");
     for (const [key, value] of Object.entries(data))
       htmlFile = htmlFile.replaceAll(`#${key}#`, value);
     const pdfOptions = { format: "A5" };
-    mainWindow.webContents.send("print", "generating pdf");
-    await html_to_pdf
-      .generatePdf({ content: htmlFile }, pdfOptions)
-      .then((pdfBuffer) => {
-        fs.writeFile(
-          AppFiles.pdfOutput,
-          pdfBuffer,
-          "utf-8",
-          async (err, res) => {
-            mainWindow.webContents.send("print", "pdf generated");
+    printToAngular("generating pdf");
 
-            if (err) console.log(err);
-            var printerList = await ptp.getPrinters();
-            const printer = printerList.find((a) =>
-              a.name.includes(config.printer)
-            );
-            if (printer == undefined || printer == null) {
-              throw new Error("YAZICI BULUNAMADI!");
-            }
-            const printOptions = {
-              printer: printer.deviceId,
-            };
-            mainWindow.webContents.send("print", "printing");
+    generatePdf({ content: htmlFile }, pdfOptions).then((pdfBuffer) => {
+      fs.writeFile(AppFiles.pdfOutput, pdfBuffer, "utf-8", async (err, res) => {
+        if (err) {
+          printToAngular(err);
+          return;
+        }
 
-            await ptp.print(AppFiles.pdfOutput, printOptions);
-          }
-        );
+        printToAngular("pdf generated");
+
+        printPdf();
       });
+    });
   } catch (error) {
-    mainWindow.webContents.send("print", error);
+    printToAngular(error);
   }
 });
 
 autoUpdater.on("update-available", () => {
   mainWindow.webContents.send("update_available");
-  mainWindow.webContents.send("print", "update_available");
+  printToAngular("update_available");
 });
 
 autoUpdater.on("download-progress", (progressObj) => {
-  console.log(progressObj.percent);
-
   let log_message = "Hız: " + progressObj.bytesPerSecond;
   log_message = log_message + " - İndirilen " + progressObj.percent + "%";
   mainWindow.webContents.send("download_progress", {
     text: log_message,
     data: progressObj,
   });
-  mainWindow.webContents.send("print", log_message);
+  printToAngular(log_message);
 });
 
 autoUpdater.on("update-downloaded", () => {
-  mainWindow.webContents.send("print", "update-downloaded");
+  printToAngular("update-downloaded");
   mainWindow.webContents.send("update_downloaded");
 });
 
 autoUpdater.on("error", (message) => {
-  mainWindow.webContents.send("print", message);
+  printToAngular(message);
 });
+
+async function printPdf() {
+  try {
+    var printerList = await ptp.getPrinters();
+    const printer = printerList.find((a) => a.name.includes(config.printer));
+    if (printer == undefined || printer == null) {
+      throw new Error("YAZICI BULUNAMADI!");
+    }
+    const printOptions = {
+      printer: printer.deviceId,
+    };
+    printToAngular("printing");
+
+    await ptp.print(AppFiles.pdfOutput, printOptions);
+  } catch (error) {
+    printToAngular(error);
+  }
+}
+
+async function generatePdf(file, options, callback) {
+  try {
+    // we are using headless mode
+    let args = ["--no-sandbox", "--disable-setuid-sandbox"];
+    if (options.args) {
+      args = options.args;
+      delete options.args;
+    }
+    var launchOpts = { args: args };
+    if (app.isPackaged) {
+      var path = __dirname.replace("app.asar", "app.asar.unpacked");
+      path +=
+        "\\node_modules\\puppeteer\\.local-chromium\\win64-901912\\chrome-win\\chrome.exe";
+      launchOpts.executablePath = path;
+    }
+    const browser = await puppeteer.launch(launchOpts);
+    const page = await browser.newPage();
+
+    if (file.content) {
+      data = await inlineCss(file.content, { url: "/" });
+      // we have compile our code with handlebars
+      const template = hb.compile(data, { strict: true });
+      const result = template(data);
+      const html = result;
+
+      // We set the page content as the generated html by handlebars
+      await page.setContent(html, {
+        waitUntil: "networkidle0", // wait for page to load completely
+      });
+    } else {
+      await page.goto(file.url, {
+        waitUntil: ["load", "networkidle0"], // wait for page to load completely
+      });
+    }
+
+    return Promise.props(page.pdf(options))
+      .then(async function (data) {
+        await browser.close();
+
+        return Buffer.from(Object.values(data));
+      })
+      .asCallback(callback);
+  } catch (error) {
+    printToAngular(error);
+  }
+}
+
+function printToAngular(message) {
+  mainWindow.webContents.send("print", message);
+}

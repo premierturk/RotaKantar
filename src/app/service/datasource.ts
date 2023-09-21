@@ -27,7 +27,7 @@ export class DataSource {
         content: errorMessage,
         actions: [{ text: 'Tamam', primary: true }],
       })
-      .result.subscribe((result) => { });
+      .result.subscribe((result) => {});
   }
   async login(url: string, data: any) {
     try {
@@ -63,7 +63,6 @@ export class DataSource {
       const resp = await httpClient.post(url, data);
       var success = false;
       if (resp.status == 200) {
-        debugger;
         success = true;
         Notiflix.Notify.success('Başarılı');
       } else {

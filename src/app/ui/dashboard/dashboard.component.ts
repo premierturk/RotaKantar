@@ -1,7 +1,17 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ChangeDetectorRef,
+  HostListener,
+} from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup } from '@angular/forms';
-import { DataStateChangeEvent, GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
+import {
+  DataStateChangeEvent,
+  GridComponent,
+  GridDataResult,
+} from '@progress/kendo-angular-grid';
 import { State, process } from '@progress/kendo-data-query';
 import { HttpClient } from '@angular/common/http';
 import { ElectronService } from 'ngx-electron';
@@ -48,7 +58,7 @@ export class DashboardComponent implements OnInit {
   public f_dsMalzemeTur: Array<any> = [];
   public f_dsTasOcaklari: Array<any> = [];
   public saveDisabled: boolean = false;
-  public barcode: string = "";
+  public barcode: string = '';
   public isLoading: boolean = false;
   public user: any;
   ngOnInit(): void {
@@ -59,17 +69,24 @@ export class DashboardComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    if (event.key == "Enter") {
+    if (event.key == 'Enter') {
       console.log(this.barcode);
-      const arac = this.dsPlaka.filter((x) => this.barcode.toLocaleUpperCase().includes(x.PlakaNo))[0];
+      var plaka = this.plakaFromBarcode(this.barcode);
+      console.log(plaka);
+      const arac = this.dsPlaka.filter((x) => plaka == x.PlakaNo)[0];
       if (arac != undefined && arac != null) {
         this.plakaSelected(arac.AracId);
       }
-      this.barcode = "";
+      this.barcode = '';
       return;
     }
 
     this.barcode += event.key;
+  }
+  public plakaFromBarcode(code) {
+    var arr = code.split(',000026');
+    var s = arr[arr.length - 1];
+    return s.replaceAll('Shift', '').replaceAll('Control', '');
   }
 
   onDataKantar(event, data) {
@@ -82,7 +99,9 @@ export class DashboardComponent implements OnInit {
   public async plakaSelected(a) {
     const arac = this.dsPlaka.filter((x) => x.AracId == a)[0];
     this.isLoading = true;
-    const res = await this.ds.get(`${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`);
+    const res = await this.ds.get(
+      `${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`
+    );
     this.isLoading = false;
     this.formData.TasOcagiId = res.TasOcagiId;
     this.formData.TasOcagiGirisTarihi = res.TasOcagiGirisTarihi;
@@ -100,16 +119,16 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-
   public async BindForm() {
     this.user = JSON.parse(localStorage.getItem('user'));
     this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
     this.handleFilterArac('');
     this.dsMalzemeTur = await this.ds.get(`${this.url}/api/MalzemeTuruList`);
     this.handleFilterMalzeme('');
-    this.dsTasOcaklari = await this.ds.get(`${this.url}/api/Kantar/TasOcaklariMini?ProjeId=${this.user.ProjeId}`);
+    this.dsTasOcaklari = await this.ds.get(
+      `${this.url}/api/Kantar/TasOcaklariMini?ProjeId=${this.user.ProjeId}`
+    );
     this.handleFilterTasOcak('');
-
   }
 
   public async BindGrid() {
@@ -148,19 +167,54 @@ export class DashboardComponent implements OnInit {
       return;
     }
     this.isLoading = true;
-    var result = await this.ds.post(
-      `${this.url}/api/Kantar`,
-      this.formData
-    );
+    var result = await this.ds.post(`${this.url}/api/Kantar`, this.formData);
     this.isLoading = false;
     if (result.success) {
       if (this._electronService.ipcRenderer)
-        this._electronService.ipcRenderer.send("onprint", [result.data]);
+        this._electronService.ipcRenderer.send('onprint', [result.data]);
 
       this.formData = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
       this.BindGrid();
     }
+  }
 
+  async daraGuncelle() {
+    if (
+      this.formData.AracId == null ||
+      this.formData.Tonaj == null ||
+      this.formData.Tonaj < 1
+    ) {
+      Notiflix.Notify.failure('Araç ve ya tonaj bilgisi alınamadı!');
+      return;
+    }
+
+    const arac = this.dsPlaka.filter(
+      (x) => x.AracId == this.formData.AracId
+    )[0];
+
+    const willDelete = await Swal.fire({
+      title: `${arac.PlakaNo} plakalı aracın darası ${this.formData.Tonaj} kg olarak güncellensin mi?`,
+      type: 'warning',
+      showCloseButton: false,
+      showCancelButton: true,
+      allowOutsideClick: false,
+      cancelButtonText: 'Hayır',
+      confirmButtonText: 'Evet',
+    });
+
+    if (willDelete.value != true) return;
+
+    this.isLoading = true;
+    var result = await this.ds.post(`${this.url}/api/Kantar/Dara`, {
+      AracId: this.formData.AracId,
+      Dara: this.formData.Tonaj,
+    });
+    this.isLoading = false;
+    if (result.success) {
+      this.formData = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
+      this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
+      this.handleFilterArac('');
+    }
   }
 
   public validations(): string {
@@ -169,6 +223,7 @@ export class DashboardComponent implements OnInit {
     else if (this.formData.MalzemeTipiId == null)
       s = 'Lütfen malzeme türü seçin.';
     else if (this.formData.FirmaId == null) s = 'Firma bulunamadı.';
+    else if (this.formData.ProjeId == null) s = 'Proje bulunamadı.';
     else if (this.formData.Dara == null || this.formData.Dara < 1)
       s = 'Dara bulunamadı.';
     else if (this.formData.TasOcagiId == null) s = 'Taş ocağı bulunamadı.';

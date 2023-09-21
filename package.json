@@ -7,7 +7,6 @@
   "version": "1.2.7",
   "main": "main.js",
   "scripts": {
-    "postinstall": "ngcc",
     "start": "ng serve --proxy-config src/proxy.conf.json",
     "electron": "electron .",
     "electronB": "ng build --base-href ./ && electron .",
@@ -20,9 +19,9 @@
     "fs": false
   },
   "build": {
+    "asar": true,
     "appId": "premierturk.rotakantar",
     "productName": "RotaKantar",
-    "asar": false,
     "directories": {
       "buildResources": "assets"
     },
@@ -46,7 +45,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },
-    "extraResources": [
+    "extraFiles": [
       "./kantarConfigs.json",
       "./pdf/**"
     ]
@@ -89,11 +88,13 @@
     "@progress/kendo-theme-bootstrap": "^6.2.0",
     "@types/axios": "^0.14.0",
     "@types/electron": "^1.6.10",
+    "bluebird": "^3.7.2",
     "bootstrap": "^4.3.1",
     "electron-shortcut": "^0.5.0",
     "electron-updater": "^4.3.1",
     "fs": "0.0.1-security",
-    "html-pdf-node": "^1.0.8",
+    "handlebars": "^4.7.6",
+    "inline-css": "^3.0.0",
     "jquery": "^3.6.3",
     "mime": "^3.0.0",
     "moment": "^2.29.4",
@@ -103,9 +104,10 @@
     "notiflix": "^3.2.6",
     "path": "^0.12.7",
     "pdf-to-printer": "^5.6.0",
+    "puppeteer": "^10.4.0",
     "rxjs": "~7.4.0",
     "serialport": "^11.0.0",
-    "sweetalert2": "^11.7.3",
+    "sweetalert2": "^8.13.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

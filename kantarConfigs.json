@@ -1,35 +1,46 @@
 {
-    "debugKantar": {
-        "kantar": true,
-        "printer": "EPSON",
-        "serialPort": {
-            "path": "COM14",
-            "autoOpen": false,
-            "baudRate": 9600,
-            "dataBits": 8,
-            "parity": "none"
-        }
-    },
-    "yakapinar": {
-        "kantar": true,
-        "printer": "Default_printer",
-        "serialPort": {
-            "path": "COM3",
-            "autoOpen": false,
-            "baudRate": 9600,
-            "dataBits": 8,
-            "parity": "none"
-        }
-    },
-    "kantar2": {
-        "kantar": true,
-        "printer": "Default_printer",
-        "serialPort": {
-            "path": "COM14",
-            "autoOpen": false,
-            "baudRate": 9600,
-            "dataBits": 8,
-            "parity": "none"
-        }
+  "debugKantar": {
+    "kantar": true,
+    "printer": "EPSON",
+    "serialPort": {
+      "path": "COM14",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
     }
+  },
+  "yakapinar": {
+    "kantar": true,
+    "printer": "EPSON",
+    "serialPort": {
+      "path": "COM3",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  },
+  "cokcapinar": {
+    "kantar": true,
+    "printer": "EPSON",
+    "serialPort": {
+      "path": "COM2",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  },
+  "nurdagi": {
+    "kantar": true,
+    "printer": "EPSON",
+    "serialPort": {
+      "path": "COM3",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  }
 }
