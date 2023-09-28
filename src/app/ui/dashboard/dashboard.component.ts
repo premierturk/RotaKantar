@@ -19,6 +19,7 @@ import { ButtonType, DataSource } from 'src/app/service/datasource';
 import { environment } from 'src/environment';
 import * as Notiflix from 'node_modules/notiflix/dist/notiflix-3.2.6.min.js';
 import Swal from 'sweetalert2';
+import * as moment from 'moment';
 @Component({
   selector: 'app-tespit-history',
   templateUrl: './dashboard.component.html',
@@ -61,9 +62,14 @@ export class DashboardComponent implements OnInit {
   public barcode: string = '';
   public isLoading: boolean = false;
   public user: any;
+  public basTar: Date;
+  public bitTar: Date;
+
   ngOnInit(): void {
     this.BindGrid();
     this.BindForm();
+    this.basTar = new Date();
+    this.bitTar = moment(this.basTar).add('days', 1).toDate();
     //Swal.fire('Bilgilendirme', 'TEST', 'warning');
   }
 
@@ -73,7 +79,9 @@ export class DashboardComponent implements OnInit {
       console.log(this.barcode);
       var plaka = this.plakaFromBarcode(this.barcode);
       console.log(plaka);
-      const arac = this.dsPlaka.filter((x) => plaka == x.PlakaNo)[0];
+      const arac = this.dsPlaka.filter(
+        (x) => plaka.toUpperCase() == x.PlakaNo
+      )[0];
       if (arac != undefined && arac != null) {
         this.plakaSelected(arac.AracId);
       }
@@ -132,7 +140,11 @@ export class DashboardComponent implements OnInit {
   }
 
   public async BindGrid() {
-    this.list = await this.ds.get(`${this.url}/api/KantarList`);
+    var url = `${this.url}/api/KantarListV2`;
+    url += `?basTar=${moment(this.basTar).format('yyyy-MM-DD')}`;
+    url += `&bitTar=${moment(this.bitTar).format('yyyy-MM-DD')}`;
+
+    this.list = await this.ds.get(url);
     this.view = process(this.list, this.state);
   }
 

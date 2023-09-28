@@ -1,0 +1,17 @@
+REC ULUSLARARASI İNŞ.YAT.SAN. VE TİC. A.Ş.
+TEL 0212 852 4707 | FAX 0212 852 06 12
+{{KantarName}}
+
+Tartı No            : {{TartiNo}}
+Plaka                 : {{PlakaNo}}
+1.Tartı Tarihi    : {{DaraTarih}}
+2.Tartı Tarihi    : {{TartiTarih}}
+Malzeme Adı    : {{MalzemeAdi}}
+Firma Adı          : {{FirmaAdi}}
+Geldiği Yer       : {{GeldigiYer}}
+Tartı memuru   : {{TartiMemuru}}
+
+
+1.Tartı            : {{Dara}} kg
+2.Tartı            : {{Tonaj}} kg
+Net                 : {{NetTonaj}} kg

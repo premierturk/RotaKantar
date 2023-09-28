@@ -1,7 +1,8 @@
 {
   "debugKantar": {
     "kantar": true,
-    "printer": "EPSON",
+    "printer": "EPSON LX-350",
+    "yazici": true,
     "serialPort": {
       "path": "COM14",
       "autoOpen": false,
@@ -12,7 +13,8 @@
   },
   "yakapinar": {
     "kantar": true,
-    "printer": "EPSON",
+    "yazici": true,
+    "printer": "EPSON LX-350",
     "serialPort": {
       "path": "COM3",
       "autoOpen": false,
@@ -23,7 +25,8 @@
   },
   "cokcapinar": {
     "kantar": true,
-    "printer": "EPSON",
+    "yazici": true,
+    "printer": "EPSON LX-350",
     "serialPort": {
       "path": "COM2",
       "autoOpen": false,
@@ -34,9 +37,34 @@
   },
   "nurdagi": {
     "kantar": true,
-    "printer": "EPSON",
+    "yazici": true,
+    "printer": "EPSON LX-350",
     "serialPort": {
       "path": "COM3",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  },
+  "ayhanlar": {
+    "kantar": true,
+    "yazici": true,
+    "printer": "EPSON LX-350",
+    "serialPort": {
+      "path": "COM2",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  },
+  "arkas": {
+    "kantar": true,
+    "yazici": true,
+    "printer": "EPSON LX-350",
+    "serialPort": {
+      "path": "COM2",
       "autoOpen": false,
       "baudRate": 9600,
       "dataBits": 8,

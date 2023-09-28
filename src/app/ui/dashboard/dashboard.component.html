@@ -6,6 +6,23 @@
     [hidHeader]="true"
     style="padding: 0px 5px"
   >
+    <div class="row" style="align-items: flex-end">
+      <div class="form-group col-md-5">
+        <label>Başlangıç Tarihi</label>
+        <kendo-datepicker [(ngModel)]="basTar"> </kendo-datepicker>
+      </div>
+
+      <div class="form-group col-md-5">
+        <label>Bitiş Tarihi</label>
+        <kendo-datepicker [(ngModel)]="bitTar"> </kendo-datepicker>
+      </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-primary ml-5" (click)="BindGrid()">
+          <i class="fa-list far fas pr-2"></i>Listele
+        </button>
+      </div>
+    </div>
+
     <kendo-grid
       #grid
       [data]="view"

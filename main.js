@@ -4,18 +4,16 @@ const { autoUpdater } = require("electron-updater");
 const { SerialPort } = require("serialport");
 const path = require("path");
 const fs = require("fs");
-const puppeteer = require("puppeteer");
-var Promise = require("bluebird");
-const hb = require("handlebars");
-const inlineCss = require("inline-css");
-const ptp = require("pdf-to-printer");
 const moment = require("moment/moment");
+var nrc = require("node-run-cmd");
+const { spawn } = require("child_process");
 
 class AppFiles {
-  static kantarConfigs = `./kantarConfigs.json`;
+  static kantarConfigs = `kantarConfigs.json`;
   static kantarName = "C:\\RotaKantarName.json";
-  static pdfTempHtml = "./pdf/template.html";
-  static pdfOutput = "./pdf/output.pdf";
+  static tempTxt = "fis/template.txt";
+  static outTxt = "fis/output.txt";
+  static exePath = "fis/PrintFis.exe";
 }
 
 const configJsonFile = JSON.parse(fs.readFileSync(AppFiles.kantarConfigs));
@@ -133,6 +131,7 @@ ipcMain.on("restart_update", () => {
 });
 
 ipcMain.on("onprint", async (event, data) => {
+  if (!config.yazici) return;
   try {
     printToAngular("ONPRİNT");
     data = data[0];
@@ -143,23 +142,46 @@ ipcMain.on("onprint", async (event, data) => {
     data.TartiTarih = moment(data.TartiTarih).format("DD.MM.yyyy HH:mm");
 
     printToAngular(data);
-    var htmlFile = fs.readFileSync(AppFiles.pdfTempHtml, "utf-8");
+    var fisTxt = fs.readFileSync(AppFiles.tempTxt, "utf-8");
     for (const [key, value] of Object.entries(data))
-      htmlFile = htmlFile.replaceAll(`#${key}#`, value);
-    const pdfOptions = { format: "A5" };
-    printToAngular("generating pdf");
+      fisTxt = fisTxt.replaceAll(`{{${key}}}`, value);
 
-    generatePdf({ content: htmlFile }, pdfOptions).then((pdfBuffer) => {
-      fs.writeFile(AppFiles.pdfOutput, pdfBuffer, "utf-8", async (err, res) => {
-        if (err) {
-          printToAngular(err);
-          return;
+    fs.writeFile(AppFiles.outTxt, fisTxt, (err, res) => {
+      if (err) {
+        printToAngular(err);
+        return;
+      }
+      const command =
+        AppFiles.exePath + `"${config.printer}" "${AppFiles.outTxt}"`;
+
+      nrc.run(command).then(
+        function (exitCodes) {
+          printToAngular("printed  " + exitCodes);
+        },
+        function (err) {
+          printToAngular("Command failed to run with error: " + err);
         }
+      );
 
-        printToAngular("pdf generated");
+      // const exePath = AppFiles.exePath;
+      // const args = [config.printer, AppFiles.outTxt];
+      // const options = {
+      //   detached: true,
+      //   stdio: "ignore",
+      // };
+      // const child = spawn(exePath, args, options);
+      // child.unref();
 
-        printPdf();
-      });
+      // // You can listen to events from the child process if needed
+      // child.on("error", (err) => {
+      //   console.error("Error:", err);
+      // });
+
+      // child.on("exit", (code, signal) => {
+      //   console.log(
+      //     `Child process exited with code ${code} and signal ${signal}`
+      //   );
+      // });
     });
   } catch (error) {
     printToAngular(error);
@@ -189,71 +211,6 @@ autoUpdater.on("update-downloaded", () => {
 autoUpdater.on("error", (message) => {
   printToAngular(message);
 });
-
-async function printPdf() {
-  try {
-    var printerList = await ptp.getPrinters();
-    const printer = printerList.find((a) => a.name.includes(config.printer));
-    if (printer == undefined || printer == null) {
-      throw new Error("YAZICI BULUNAMADI!");
-    }
-    const printOptions = {
-      printer: printer.deviceId,
-    };
-    printToAngular("printing");
-
-    await ptp.print(AppFiles.pdfOutput, printOptions);
-  } catch (error) {
-    printToAngular(error);
-  }
-}
-
-async function generatePdf(file, options, callback) {
-  try {
-    // we are using headless mode
-    let args = ["--no-sandbox", "--disable-setuid-sandbox"];
-    if (options.args) {
-      args = options.args;
-      delete options.args;
-    }
-    var launchOpts = { args: args };
-    if (app.isPackaged) {
-      var path = __dirname.replace("app.asar", "app.asar.unpacked");
-      path +=
-        "\\node_modules\\puppeteer\\.local-chromium\\win64-901912\\chrome-win\\chrome.exe";
-      launchOpts.executablePath = path;
-    }
-    const browser = await puppeteer.launch(launchOpts);
-    const page = await browser.newPage();
-
-    if (file.content) {
-      data = await inlineCss(file.content, { url: "/" });
-      // we have compile our code with handlebars
-      const template = hb.compile(data, { strict: true });
-      const result = template(data);
-      const html = result;
-
-      // We set the page content as the generated html by handlebars
-      await page.setContent(html, {
-        waitUntil: "networkidle0", // wait for page to load completely
-      });
-    } else {
-      await page.goto(file.url, {
-        waitUntil: ["load", "networkidle0"], // wait for page to load completely
-      });
-    }
-
-    return Promise.props(page.pdf(options))
-      .then(async function (data) {
-        await browser.close();
-
-        return Buffer.from(Object.values(data));
-      })
-      .asCallback(callback);
-  } catch (error) {
-    printToAngular(error);
-  }
-}
 
 function printToAngular(message) {
   mainWindow.webContents.send("print", message);

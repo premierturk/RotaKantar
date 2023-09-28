@@ -4,7 +4,7 @@
   "description": "RotaKantar",
   "author": "premierturk",
   "license": "CC0-1.0",
-  "version": "1.2.7",
+  "version": "1.2.9",
   "main": "main.js",
   "scripts": {
     "start": "ng serve --proxy-config src/proxy.conf.json",
@@ -47,7 +47,7 @@
     },
     "extraFiles": [
       "./kantarConfigs.json",
-      "./pdf/**"
+      "./fis/**"
     ]
   },
   "private": true,
@@ -88,23 +88,18 @@
     "@progress/kendo-theme-bootstrap": "^6.2.0",
     "@types/axios": "^0.14.0",
     "@types/electron": "^1.6.10",
-    "bluebird": "^3.7.2",
     "bootstrap": "^4.3.1",
     "electron-shortcut": "^0.5.0",
     "electron-updater": "^4.3.1",
     "fs": "0.0.1-security",
-    "handlebars": "^4.7.6",
-    "inline-css": "^3.0.0",
     "jquery": "^3.6.3",
-    "mime": "^3.0.0",
     "moment": "^2.29.4",
     "ng-click-outside": "^9.0.1",
     "ngx-electron": "^2.2.0",
     "ngx-perfect-scrollbar": "^8.0.0",
+    "node-run-cmd": "^1.0.1",
     "notiflix": "^3.2.6",
     "path": "^0.12.7",
-    "pdf-to-printer": "^5.6.0",
-    "puppeteer": "^10.4.0",
     "rxjs": "~7.4.0",
     "serialport": "^11.0.0",
     "sweetalert2": "^8.13.0",
