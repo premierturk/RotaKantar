@@ -1,8 +1,8 @@
 {
   "debugKantar": {
     "kantar": true,
-    "printer": "EPSON LX-350",
-    "yazici": true,
+    "printerName": "EPSON LX-350",
+    "isPrinterOn": true,
     "serialPort": {
       "path": "COM14",
       "autoOpen": false,
@@ -13,8 +13,8 @@
   },
   "yakapinar": {
     "kantar": true,
-    "yazici": true,
-    "printer": "EPSON LX-350",
+    "isPrinterOn": false,
+    "printerName": "EPSON LX-350",
     "serialPort": {
       "path": "COM3",
       "autoOpen": false,
@@ -25,8 +25,8 @@
   },
   "cokcapinar": {
     "kantar": true,
-    "yazici": true,
-    "printer": "EPSON LX-350",
+    "isPrinterOn": true,
+    "printerName": "EPSON LX-350",
     "serialPort": {
       "path": "COM2",
       "autoOpen": false,
@@ -37,8 +37,8 @@
   },
   "nurdagi": {
     "kantar": true,
-    "yazici": true,
-    "printer": "EPSON LX-350",
+    "isPrinterOn": false,
+    "printerName": "EPSON LX-350",
     "serialPort": {
       "path": "COM3",
       "autoOpen": false,
@@ -49,8 +49,8 @@
   },
   "ayhanlar": {
     "kantar": true,
-    "yazici": true,
-    "printer": "EPSON LX-350",
+    "isPrinterOn": false,
+    "printerName": "EPSON LX-350",
     "serialPort": {
       "path": "COM2",
       "autoOpen": false,
@@ -61,8 +61,8 @@
   },
   "arkas": {
     "kantar": true,
-    "yazici": true,
-    "printer": "EPSON LX-350",
+    "isPrinterOn": false,
+    "printerName": "EPSON LX-350",
     "serialPort": {
       "path": "COM2",
       "autoOpen": false,

@@ -42,10 +42,9 @@ export class DashboardComponent implements OnInit {
   }
   private url: string = environment.production ? environment.apiUrl : '/api';
   @ViewChild('grid') grid: GridComponent;
+  public ButtonType = ButtonType;
   public view: GridDataResult;
   public list: any[];
-  public form: FormGroup;
-  public ButtonType = ButtonType;
   public state: State = {
     skip: 0,
     take: 20,
@@ -55,20 +54,24 @@ export class DashboardComponent implements OnInit {
   public dsPlaka: Array<any> = [];
   public dsMalzemeTur: Array<any> = [];
   public dsTasOcaklari: Array<any> = [];
+  public dsProjeAlanlari: Array<any> = [];
   public f_dsPlaka: Array<any> = [];
   public f_dsMalzemeTur: Array<any> = [];
   public f_dsTasOcaklari: Array<any> = [];
+  public f_dsProjeAlanlari: Array<any> = [];
+  public selectedItem: any;
   public saveDisabled: boolean = false;
   public barcode: string = '';
   public isLoading: boolean = false;
   public user: any;
   public basTar: Date;
   public bitTar: Date;
-
+  public mySelections: any[] = [];
   ngOnInit(): void {
     this.BindGrid();
     this.BindForm();
-    this.basTar = new Date();
+    var now = new Date();
+    this.basTar = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     this.bitTar = moment(this.basTar).add('days', 1).toDate();
     //Swal.fire('Bilgilendirme', 'TEST', 'warning');
   }
@@ -79,9 +82,7 @@ export class DashboardComponent implements OnInit {
       console.log(this.barcode);
       var plaka = this.plakaFromBarcode(this.barcode);
       console.log(plaka);
-      const arac = this.dsPlaka.filter(
-        (x) => plaka.toUpperCase() == x.PlakaNo
-      )[0];
+      const arac = this.dsPlaka.find((x) => plaka.toUpperCase() == x.PlakaNo);
       if (arac != undefined && arac != null) {
         this.plakaSelected(arac.AracId);
       }
@@ -91,6 +92,7 @@ export class DashboardComponent implements OnInit {
 
     this.barcode += event.key;
   }
+
   public plakaFromBarcode(code) {
     var arr = code.split(',000026');
     var s = arr[arr.length - 1];
@@ -107,9 +109,8 @@ export class DashboardComponent implements OnInit {
   public async plakaSelected(a) {
     const arac = this.dsPlaka.filter((x) => x.AracId == a)[0];
     this.isLoading = true;
-    const res = await this.ds.get(
-      `${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`
-    );
+    const res = await this.ds.get(`${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`);
+    //if (res.TasOcagiId == undefined || res.TasOcagiId == null) Notiflix.Notify.failure("");
     this.isLoading = false;
     this.formData.TasOcagiId = res.TasOcagiId;
     this.formData.TasOcagiGirisTarihi = res.TasOcagiGirisTarihi;
@@ -129,18 +130,20 @@ export class DashboardComponent implements OnInit {
 
   public async BindForm() {
     this.user = JSON.parse(localStorage.getItem('user'));
+
     this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
     this.handleFilterArac('');
     this.dsMalzemeTur = await this.ds.get(`${this.url}/api/MalzemeTuruList`);
     this.handleFilterMalzeme('');
-    this.dsTasOcaklari = await this.ds.get(
-      `${this.url}/api/Kantar/TasOcaklariMini?ProjeId=${this.user.ProjeId}`
-    );
+    this.dsTasOcaklari = await this.ds.get(`${this.url}/api/Kantar/TasOcaklariMini?ProjeId=${this.user.ProjeId}`);
     this.handleFilterTasOcak('');
+    this.dsProjeAlanlari = await this.ds.get(`${this.url}/api/Kantar/ProjeAlanlari?ProjeId=${this.user.ProjeId}`);
+    this.handleProjeAlanlari('');
   }
 
   public async BindGrid() {
-    var url = `${this.url}/api/KantarListV2`;
+    this.clearSelections();
+    var url = `${this.url}/api/KantarListV3`;
     url += `?basTar=${moment(this.basTar).format('yyyy-MM-DD')}`;
     url += `&bitTar=${moment(this.bitTar).format('yyyy-MM-DD')}`;
 
@@ -152,25 +155,37 @@ export class DashboardComponent implements OnInit {
     this.state = state;
     this.view = process(this.list, this.state);
   }
-
+  public onCellClick(a) {
+    this.selectedItem = a.dataItem;
+  }
   public handleFilterArac(keyword) {
-    this.f_dsPlaka = this.dsPlaka.filter((x) =>
-      x.PlakaNo.includes(keyword.toUpperCase())
-    );
+    this.f_dsPlaka = this.dsPlaka.filter((x) => x.PlakaNo.includes(keyword.toUpperCase()));
   }
 
   public handleFilterMalzeme(keyword) {
-    this.f_dsMalzemeTur = this.dsMalzemeTur.filter((x) =>
-      x.MalzemeTuru.includes(keyword.toUpperCase())
-    );
+    this.f_dsMalzemeTur = this.dsMalzemeTur.filter((x) => x.MalzemeTuru.includes(keyword.toUpperCase()));
   }
 
   public handleFilterTasOcak(keyword) {
-    this.f_dsTasOcaklari = this.dsTasOcaklari.filter((x) =>
-      x.Adi.toUpperCase().includes(keyword.toUpperCase())
-    );
+    this.f_dsTasOcaklari = this.dsTasOcaklari.filter((x) => x.Adi.toUpperCase().includes(keyword.toUpperCase()));
   }
 
+  public handleProjeAlanlari(keyword) {
+    this.f_dsProjeAlanlari = this.dsProjeAlanlari.filter((x) => x.AlanAdi.toUpperCase().includes(keyword.toUpperCase()));
+  }
+
+  public Print(data) {
+    if (data == null) return;
+
+    if (this._electronService.ipcRenderer)
+      this._electronService.ipcRenderer.send('onprint', [data]);
+
+    this.clearSelections();
+  }
+  public clearSelections() {
+    this.selectedItem = undefined;
+    this.mySelections = [];
+  }
   async save() {
     this.formData.ProjeId = this.user.ProjeId;
     var err = this.validations();
@@ -182,27 +197,19 @@ export class DashboardComponent implements OnInit {
     var result = await this.ds.post(`${this.url}/api/Kantar`, this.formData);
     this.isLoading = false;
     if (result.success) {
-      if (this._electronService.ipcRenderer)
-        this._electronService.ipcRenderer.send('onprint', [result.data]);
-
+      this.Print(result.data);
       this.formData = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
       this.BindGrid();
     }
   }
 
   async daraGuncelle() {
-    if (
-      this.formData.AracId == null ||
-      this.formData.Tonaj == null ||
-      this.formData.Tonaj < 1
-    ) {
+    if (this.formData.AracId == null || this.formData.Tonaj == null || this.formData.Tonaj < 1) {
       Notiflix.Notify.failure('Araç ve ya tonaj bilgisi alınamadı!');
       return;
     }
 
-    const arac = this.dsPlaka.filter(
-      (x) => x.AracId == this.formData.AracId
-    )[0];
+    const arac = this.dsPlaka.filter((x) => x.AracId == this.formData.AracId)[0];
 
     const willDelete = await Swal.fire({
       title: `${arac.PlakaNo} plakalı aracın darası ${this.formData.Tonaj} kg olarak güncellensin mi?`,
@@ -217,10 +224,7 @@ export class DashboardComponent implements OnInit {
     if (willDelete.value != true) return;
 
     this.isLoading = true;
-    var result = await this.ds.post(`${this.url}/api/Kantar/Dara`, {
-      AracId: this.formData.AracId,
-      Dara: this.formData.Tonaj,
-    });
+    var result = await this.ds.post(`${this.url}/api/Kantar/Dara`, { AracId: this.formData.AracId, Dara: this.formData.Tonaj });
     this.isLoading = false;
     if (result.success) {
       this.formData = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
@@ -232,15 +236,13 @@ export class DashboardComponent implements OnInit {
   public validations(): string {
     var s = '';
     if (this.formData.AracId == null) s = 'Lütfen plaka seçin.';
-    else if (this.formData.MalzemeTipiId == null)
-      s = 'Lütfen malzeme türü seçin.';
+    else if (this.formData.MalzemeTipiId == null) s = 'Lütfen malzeme türü seçin.';
     else if (this.formData.FirmaId == null) s = 'Firma bulunamadı.';
     else if (this.formData.ProjeId == null) s = 'Proje bulunamadı.';
-    else if (this.formData.Dara == null || this.formData.Dara < 1)
-      s = 'Dara bulunamadı.';
+    else if (this.formData.Dara == null || this.formData.Dara < 1) s = 'Dara bulunamadı.';
     else if (this.formData.TasOcagiId == null) s = 'Taş ocağı bulunamadı.';
-    else if (this.formData.Tonaj == null || this.formData.Tonaj < 1)
-      s = 'Tonaj bulunamadı.';
+    else if (this.formData.Tonaj == null || this.formData.Tonaj < 1) s = 'Tonaj bulunamadı.';
+    else if (this.formData.ProjeAlaniId == null) s = 'Proje Alanı bulunamadı.';
     return s;
   }
 }

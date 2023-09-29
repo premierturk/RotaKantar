@@ -6,7 +6,6 @@ const path = require("path");
 const fs = require("fs");
 const moment = require("moment/moment");
 var nrc = require("node-run-cmd");
-const { spawn } = require("child_process");
 
 class AppFiles {
   static kantarConfigs = `kantarConfigs.json`;
@@ -131,7 +130,7 @@ ipcMain.on("restart_update", () => {
 });
 
 ipcMain.on("onprint", async (event, data) => {
-  if (!config.yazici) return;
+  if (!config.isPrinterOn) return;
   try {
     printToAngular("ONPRİNT");
     data = data[0];
@@ -152,7 +151,7 @@ ipcMain.on("onprint", async (event, data) => {
         return;
       }
       const command =
-        AppFiles.exePath + `"${config.printer}" "${AppFiles.outTxt}"`;
+        AppFiles.exePath + `"${config.printerName}" "${AppFiles.outTxt}"`;
 
       nrc.run(command).then(
         function (exitCodes) {
@@ -162,26 +161,6 @@ ipcMain.on("onprint", async (event, data) => {
           printToAngular("Command failed to run with error: " + err);
         }
       );
-
-      // const exePath = AppFiles.exePath;
-      // const args = [config.printer, AppFiles.outTxt];
-      // const options = {
-      //   detached: true,
-      //   stdio: "ignore",
-      // };
-      // const child = spawn(exePath, args, options);
-      // child.unref();
-
-      // // You can listen to events from the child process if needed
-      // child.on("error", (err) => {
-      //   console.error("Error:", err);
-      // });
-
-      // child.on("exit", (code, signal) => {
-      //   console.log(
-      //     `Child process exited with code ${code} and signal ${signal}`
-      //   );
-      // });
     });
   } catch (error) {
     printToAngular(error);

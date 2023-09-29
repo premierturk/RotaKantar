@@ -9,9 +9,10 @@ Plaka                 : {{PlakaNo}}
 Malzeme Adı    : {{MalzemeAdi}}
 Firma Adı          : {{FirmaAdi}}
 Geldiği Yer       : {{GeldigiYer}}
+Gittiği Yer         : {{GittigiYer}}
 Tartı memuru   : {{TartiMemuru}}
 
 
-1.Tartı            : {{Dara}} kg
-2.Tartı            : {{Tonaj}} kg
-Net                 : {{NetTonaj}} kg
+1.Tartı                : {{Dara}} kg
+2.Tartı                : {{Tonaj}} kg
+Net                     : {{NetTonaj}} kg
