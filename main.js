@@ -22,6 +22,7 @@ if (kantarName == "" || kantarName == undefined)
 
 const config = configJsonFile[kantarName];
 if (config == undefined) throw new Error("KANTAR KONFİGÜRASYONU BULUNAMADI!");
+if (config.kantarId == undefined) throw new Error("KANTAR ID BULUNAMADI!");
 
 let mainWindow;
 var args = process.argv;
@@ -62,7 +63,6 @@ async function createWindow() {
     var currMessage = "";
     var messages = [];
     port.on("data", function (data) {
-      //printToAngular( data);
 
       currMessage += Buffer.from(data).toString();
 
@@ -111,6 +111,8 @@ async function createWindow() {
 
   setTimeout(() => {
     autoUpdater.checkForUpdates();
+    mainWindow.webContents.send("KantarId", config.kantarId);
+    mainWindow.webContents.send("KantarAdi", config.kantarAdi);
   }, 4000);
 }
 
@@ -143,7 +145,7 @@ ipcMain.on("onprint", async (event, data) => {
     printToAngular(data);
     var fisTxt = fs.readFileSync(AppFiles.tempTxt, "utf-8");
     for (const [key, value] of Object.entries(data))
-      fisTxt = fisTxt.replaceAll(`{{${key}}}`, value);
+      fisTxt = fisTxt.replaceAll(`{{${key}}}`, value ?? "");
 
     fs.writeFile(AppFiles.outTxt, fisTxt, (err, res) => {
       if (err) {

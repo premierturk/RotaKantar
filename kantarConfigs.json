@@ -1,8 +1,10 @@
 {
   "debugKantar": {
+    "kantarId":1,
+    "kantarAdi":"DEBUG Kantar",
     "kantar": true,
     "printerName": "EPSON LX-350",
-    "isPrinterOn": true,
+    "isPrinterOn": false,
     "serialPort": {
       "path": "COM14",
       "autoOpen": false,
@@ -11,19 +13,9 @@
       "parity": "none"
     }
   },
-  "yakapinar": {
-    "kantar": true,
-    "isPrinterOn": false,
-    "printerName": "EPSON LX-350",
-    "serialPort": {
-      "path": "COM3",
-      "autoOpen": false,
-      "baudRate": 9600,
-      "dataBits": 8,
-      "parity": "none"
-    }
-  },
   "cokcapinar": {
+    "kantarId":2,
+    "kantarAdi":"Çokçapınar Kantar",
     "kantar": true,
     "isPrinterOn": true,
     "printerName": "EPSON LX-350",
@@ -36,6 +28,22 @@
     }
   },
   "nurdagi": {
+    "kantarId":5,
+    "kantarAdi":"Nurdağı Kantar",
+    "kantar": true,
+    "isPrinterOn": false,
+    "printerName": "EPSON LX-350",
+    "serialPort": {
+      "path": "COM3",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  },
+  "yakapinar": {
+    "kantarId":6,
+    "kantarAdi":"Yakapınar Kantar",
     "kantar": true,
     "isPrinterOn": false,
     "printerName": "EPSON LX-350",
@@ -48,6 +56,8 @@
     }
   },
   "ayhanlar": {
+    "kantarId":7,
+    "kantarAdi":"Ayhanlar Kantar",
     "kantar": true,
     "isPrinterOn": false,
     "printerName": "EPSON LX-350",
@@ -60,6 +70,8 @@
     }
   },
   "arkas": {
+    "kantarId":8,
+    "kantarAdi":"Arkas Stok Sahası",
     "kantar": true,
     "isPrinterOn": false,
     "printerName": "EPSON LX-350",
@@ -70,5 +82,33 @@
       "dataBits": 8,
       "parity": "none"
     }
-  }
+  },
+  "mamure": {
+    "kantarId":9,
+    "kantarAdi":"Mamure Kantar",
+    "kantar": true,
+    "isPrinterOn": false,
+    "printerName": "EPSON LX-350",
+    "serialPort": {
+      "path": "COM2",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  },
+  "bereket": {
+    "kantarId":10,
+    "kantarAdi":"Bereket Kantar",
+    "kantar": true,
+    "isPrinterOn": false,
+    "printerName": "EPSON LX-350",
+    "serialPort": {
+      "path": "COM2",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  } 
 }

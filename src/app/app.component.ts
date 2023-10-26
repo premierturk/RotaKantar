@@ -6,7 +6,12 @@ import { ElectronService } from 'ngx-electron';
 import Swal from 'sweetalert2';
 import helper from 'src/app/service/helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { UpdateModalComponent } from './update-modal/update-modal.component';
+import { UpdateModalComponent } from './ui/update-modal/update-modal.component';
+import { ConnectionService } from 'ng-connection-service';
+import { AppNetworkStatus } from './network-status';
+import { DataSource } from './service/datasource';
+import { OfflineRequestsComponent } from './ui/offline-requests/offline-requests.component';
+import { DashboardComponent } from './ui/dashboard/dashboard.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -15,19 +20,47 @@ import { UpdateModalComponent } from './update-modal/update-modal.component';
 })
 export class AppComponent implements OnInit {
   static componentInstance: any;
-
+  static isOffline: boolean = false;
   constructor(private rout: Router, private route: ActivatedRoute,
     private ref: ChangeDetectorRef,
     private _electronService: ElectronService,
     public help: helper,
-    public modalService: NgbModal) {
+    public modalService: NgbModal, private connectionService: ConnectionService) {
     AppComponent.componentInstance = this;
     if (this._electronService.ipcRenderer) {
       this._electronService.ipcRenderer.on('update_available', this.update);
       this._electronService.ipcRenderer.on('print', this.printAll);
+      this._electronService.ipcRenderer.on('KantarId', (event, data) => window.localStorage.setItem("KantarId", data));
+      this._electronService.ipcRenderer.on('KantarAdi', (event, data) => window.localStorage.setItem("KantarAdi", data));
     }
+    window.addEventListener("online", () => {
+      AppNetworkStatus.isOffline = false;
+      this.checkOfflineRequests();
+    });
+
+    window.addEventListener("offline", () => {
+      AppNetworkStatus.isOffline = true
+    });
+    this.checkOfflineRequests();
 
   }
+
+  checkOfflineRequests() {
+    if (!AppNetworkStatus.isOffline) {
+      var s = window.localStorage.getItem("offlineRequests");
+      if (s == null) return;
+
+      var list = JSON.parse(s);
+      if (list.length == 0) return;
+
+      const modalRef = this.help.openModal(this.modalService, OfflineRequestsComponent);
+      modalRef.result.then(() => {
+        DashboardComponent.componentInstance.ngOnInit();
+
+      });
+    }
+  }
+
   printAll(event, data) {
     console.log(data);
   }
@@ -50,3 +83,4 @@ export class AppComponent implements OnInit {
     }
   }
 }
+

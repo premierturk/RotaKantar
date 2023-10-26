@@ -1,56 +1,38 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ChangeDetectorRef,
-  HostListener,
-} from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, HostListener, ViewEncapsulation } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormGroup } from '@angular/forms';
-import {
-  DataStateChangeEvent,
-  GridComponent,
-  GridDataResult,
-} from '@progress/kendo-angular-grid';
+import { DataStateChangeEvent, GridComponent, GridDataResult, RowClassArgs } from '@progress/kendo-angular-grid';
 import { State, process } from '@progress/kendo-data-query';
-import { HttpClient } from '@angular/common/http';
 import { ElectronService } from 'ngx-electron';
 import { ButtonType, DataSource } from 'src/app/service/datasource';
 import { environment } from 'src/environment';
 import * as Notiflix from 'node_modules/notiflix/dist/notiflix-3.2.6.min.js';
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
+import { SVGIcon, fileExcelIcon } from "@progress/kendo-svg-icons";
+import { ExcelExportData } from '@progress/kendo-angular-excel-export';
+import helper from 'src/app/service/helper';
+import { DokumEditComponent } from '../dokum-edit/dokum-edit.component';
+import { AppNetworkStatus } from 'src/app/network-status';
 @Component({
   selector: 'app-tespit-history',
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
   static componentInstance: any;
-
-  constructor(
-    public modalService: NgbModal,
-    private http: HttpClient,
-    private _electronService: ElectronService,
-    private ref: ChangeDetectorRef,
-    private ds: DataSource
-  ) {
-    DashboardComponent.componentInstance = this;
-    if (this._electronService.ipcRenderer) {
-      this._electronService.ipcRenderer.on('kantar', this.onDataKantar);
-    }
-  }
   private url: string = environment.production ? environment.apiUrl : '/api';
   @ViewChild('grid') grid: GridComponent;
   public ButtonType = ButtonType;
+  public fileExcelIcon: SVGIcon = fileExcelIcon;
   public view: GridDataResult;
   public list: any[];
   public state: State = {
     skip: 0,
     take: 20,
   };
-
-  public formData: any = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
+  public formData: any;
+  private emptyFormData: any = { FirmaAdi: '', Tonaj: 0, Dara: 0, IrsaliyeNo: '', Aciklama: '' };
   public dsPlaka: Array<any> = [];
   public dsMalzemeTur: Array<any> = [];
   public dsTasOcaklari: Array<any> = [];
@@ -59,7 +41,7 @@ export class DashboardComponent implements OnInit {
   public f_dsMalzemeTur: Array<any> = [];
   public f_dsTasOcaklari: Array<any> = [];
   public f_dsProjeAlanlari: Array<any> = [];
-  public selectedItem: any;
+  public selectedItem: any = {};
   public saveDisabled: boolean = false;
   public barcode: string = '';
   public isLoading: boolean = false;
@@ -67,12 +49,28 @@ export class DashboardComponent implements OnInit {
   public basTar: Date;
   public bitTar: Date;
   public mySelections: any[] = [];
+
+  constructor(
+    public modalService: NgbModal,
+    private _electronService: ElectronService,
+    private ref: ChangeDetectorRef,
+    private ds: DataSource,
+    public help: helper,
+  ) {
+    this.allData = this.allData.bind(this);
+    DashboardComponent.componentInstance = this;
+    if (this._electronService.ipcRenderer) {
+      this._electronService.ipcRenderer.on('kantar', this.onDataKantar);
+    }
+  }
+
   ngOnInit(): void {
-    this.BindGrid();
-    this.BindForm();
+    this.formData = Object.assign(this.emptyFormData);
     var now = new Date();
     this.basTar = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    this.bitTar = moment(this.basTar).add('days', 1).toDate();
+    this.bitTar = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    this.BindGrid();
+    this.BindForm();
     //Swal.fire('Bilgilendirme', 'TEST', 'warning');
   }
 
@@ -108,15 +106,32 @@ export class DashboardComponent implements OnInit {
 
   public async plakaSelected(a) {
     const arac = this.dsPlaka.filter((x) => x.AracId == a)[0];
-    this.isLoading = true;
-    const res = await this.ds.get(`${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`);
-    //if (res.TasOcagiId == undefined || res.TasOcagiId == null) Notiflix.Notify.failure("");
-    this.isLoading = false;
-    this.formData.TasOcagiId = res.TasOcagiId;
-    this.formData.TasOcagiGirisTarihi = res.TasOcagiGirisTarihi;
-    this.formData.Latitude = res.Latitude;
-    this.formData.Longitude = res.Longitude;
+    if (!AppNetworkStatus.isOffline) {
+      this.isLoading = true;
+      const res = await this.ds.get(`${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`);
+      //if (res.TasOcagiId == undefined || res.TasOcagiId == null) Notiflix.Notify.failure("");
+      this.isLoading = false;
+      this.formData.TasOcagiId = res.TasOcagiId;
+      this.formData.TasOcagiGirisTarihi = res.TasOcagiGirisTarihi;
+      this.formData.Latitude = res.Latitude;
+      this.formData.Longitude = res.Longitude;
+    }
+
     this.fillForm(arac);
+  }
+
+  async excel() {
+    this.grid.saveAsExcel();
+  }
+
+  public allData(): ExcelExportData {
+    var excelList = this.list;
+    for (var item of excelList) {
+      item.TartiTarih = moment(item.TartiTarih).format("DD/MM/yyyy HH:mm");
+
+    }
+    const result: ExcelExportData = process(excelList, {});
+    return result;
   }
 
   public fillForm(arac) {
@@ -143,11 +158,7 @@ export class DashboardComponent implements OnInit {
 
   public async BindGrid() {
     this.clearSelections();
-    var url = `${this.url}/api/KantarListV3`;
-    url += `?basTar=${moment(this.basTar).format('yyyy-MM-DD')}`;
-    url += `&bitTar=${moment(this.bitTar).format('yyyy-MM-DD')}`;
-
-    this.list = await this.ds.get(url);
+    this.list = await this.ds.get(`${this.url}/api/KantarListV3?basTar=${moment(this.basTar).format('yyyy-MM-DD')}&bitTar=${moment(this.bitTar).add(1, 'days').format('yyyy-MM-DD')}`);
     this.view = process(this.list, this.state);
   }
 
@@ -155,9 +166,11 @@ export class DashboardComponent implements OnInit {
     this.state = state;
     this.view = process(this.list, this.state);
   }
+
   public onCellClick(a) {
     this.selectedItem = a.dataItem;
   }
+
   public handleFilterArac(keyword) {
     this.f_dsPlaka = this.dsPlaka.filter((x) => x.PlakaNo.includes(keyword.toUpperCase()));
   }
@@ -174,7 +187,7 @@ export class DashboardComponent implements OnInit {
     this.f_dsProjeAlanlari = this.dsProjeAlanlari.filter((x) => x.AlanAdi.toUpperCase().includes(keyword.toUpperCase()));
   }
 
-  public Print(data) {
+  public print(data) {
     if (data == null) return;
 
     if (this._electronService.ipcRenderer)
@@ -182,23 +195,39 @@ export class DashboardComponent implements OnInit {
 
     this.clearSelections();
   }
+
   public clearSelections() {
     this.selectedItem = undefined;
     this.mySelections = [];
   }
+
+  public rowCallback = (context: RowClassArgs) => {
+    return { localData: context.dataItem.TartiNo == null };
+  };
+
+  public edit(a) {
+    const modalRef = this.help.openModal(this.modalService, DokumEditComponent, "m");
+    modalRef.componentInstance.dokum = a;
+    modalRef.result.then((data) => {
+      this.BindGrid();
+    });
+  }
+
   async save() {
+    this.formData.TanimlarKantarId = await window.localStorage.getItem("KantarId");
     this.formData.ProjeId = this.user.ProjeId;
+    this.formData.IsOffline = AppNetworkStatus.isOffline;
     var err = this.validations();
     if (err != '') {
       Notiflix.Notify.failure(err);
       return;
     }
     this.isLoading = true;
-    var result = await this.ds.post(`${this.url}/api/Kantar`, this.formData);
+    var result = await this.ds.post(`${this.url}/api/KantarV2`, this.formData);
     this.isLoading = false;
     if (result.success) {
-      this.Print(result.data);
-      this.formData = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
+      this.print(result.data);
+      this.formData = Object.assign(this.emptyFormData);
       this.BindGrid();
     }
   }
@@ -227,7 +256,7 @@ export class DashboardComponent implements OnInit {
     var result = await this.ds.post(`${this.url}/api/Kantar/Dara`, { AracId: this.formData.AracId, Dara: this.formData.Tonaj });
     this.isLoading = false;
     if (result.success) {
-      this.formData = { FirmaAdi: '', Tonaj: 0, Dara: 0 };
+      this.formData = Object.assign(this.emptyFormData);
       this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
       this.handleFilterArac('');
     }

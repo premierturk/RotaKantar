@@ -1,0 +1,73 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="modal-basic-title"> Düzenle</h5>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">TartiNo </label>:
+        <p class="col-md-7 mb-1"> {{formData.TartiNo}}</p>
+    </div>
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">Tarih </label>:
+        <p class="col-md-7 mb-1"> {{formData.TartiTarih | date:'dd/MM/yyyy HH:mm'}}</p>
+    </div>
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">Firma Adı </label>:
+        <p class="col-md-7 mb-1"> {{formData.FirmaAdi}}</p>
+    </div>
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">Plaka </label>:
+        <p class="col-md-7 mb-1"> {{formData.PlakaNo}}</p>
+    </div>
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">Dara </label>:
+        <p class="col-md-7 mb-1"> {{formData.Dara }} kg</p>
+    </div>
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">Net Tonaj </label>:
+        <p class="col-md-7 mb-1"> {{formData.NetTonaj}} kg</p>
+    </div>
+    <div class="row" *ngIf="formData.IrsaliyeNo">
+        <label class="col-md-4 font-weight-bold">İrsaliye No </label>:
+        <p class="col-md-7 mb-1"> {{formData.IrsaliyeNo}}</p>
+    </div>
+    <div class="row" *ngIf="formData.Aciklama">
+        <label class="col-md-4 font-weight-bold">Açıklama </label>:
+        <p class="col-md-7 mb-1"> {{formData.Aciklama}}</p>
+    </div>
+    <br>
+
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">Geldiği Yer </label>:
+        <div class="col-md-7 mb-1">
+            <kendo-dropdownlist [size]="'small'" [popupSettings]="{ appendTo: 'component' }" [filterable]="true"
+                class="width" [data]="f_dsTasOcaklari" [textField]="'Adi'" [valueField]="'TasOcagiId'"
+                [valuePrimitive]="true" (filterChange)="handleFilterTasOcak($event)" [(ngModel)]="formData.TasOcagiId">
+            </kendo-dropdownlist>
+        </div>
+    </div>
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">Gittigi Yer </label>:
+        <div class="col-md-7 mb-1">
+            <kendo-dropdownlist [size]="'small'" [popupSettings]="{ appendTo: 'component' }" [filterable]="true"
+                class="width" [data]="f_dsProjeAlanlari" [textField]="'AlanAdi'" [valueField]="'ProjeAlanId'"
+                [valuePrimitive]="true" (filterChange)="handleProjeAlanlari($event)"
+                [(ngModel)]="formData.ProjeAlaniId">
+            </kendo-dropdownlist>
+        </div>
+    </div>
+    <div class="row">
+        <label class="col-md-4 font-weight-bold">Malzeme Türü </label>:
+        <div class="col-md-7 mb-1">
+            <kendo-dropdownlist [size]="'small'" [popupSettings]="{ appendTo: 'component' }" [filterable]="true"
+                class="width" [data]="f_dsMalzemeTur" [textField]="'MalzemeTuru'" [valueField]="'MalzemeTuruId'"
+                [valuePrimitive]="true" (filterChange)="handleFilterMalzeme($event)"
+                [(ngModel)]="formData.MalzemeTipiId">
+            </kendo-dropdownlist>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <app-button [buttonType]="ButtonType.Kaydet" (onclick)="save()" [isdisabled]="isLoading == true"></app-button>
+    <app-button [buttonType]="ButtonType.Kapat" (onclick)="close()" [isdisabled]="isLoading == true"></app-button>
+
+</div>

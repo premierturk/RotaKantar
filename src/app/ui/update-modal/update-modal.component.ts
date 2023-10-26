@@ -1,9 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { LabelFn, LabelSettings, ProgressBarAnimation } from '@progress/kendo-angular-progressbar';
+import { LabelSettings, ProgressBarAnimation } from '@progress/kendo-angular-progressbar';
 import { ElectronService } from 'ngx-electron';
 import { ButtonType } from 'src/app/service/datasource';
-import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-update-modal',
@@ -13,7 +12,8 @@ import { AppComponent } from '../app.component';
 export class UpdateModalComponent implements OnInit {
   static componentInstance: any;
   constructor(
-    private _electronService: ElectronService, public activeModal: NgbActiveModal,
+    private _electronService: ElectronService,
+    public activeModal: NgbActiveModal,
     private ref: ChangeDetectorRef,) {
     UpdateModalComponent.componentInstance = this;
     if (this._electronService.ipcRenderer) {

@@ -14,10 +14,10 @@ class Helper {
     this.dialogService = dService;
   }
 
-  openModal(modalService: NgbModal, content: any) {
+  openModal(modalService: NgbModal, content: any, size: any = "lg") {
 
     const modalRef = modalService.open(content, {
-      size: 'lg',
+      size: size,
       backdrop: 'static',
       windowClass: 'animated slideInDown',
       centered: false,

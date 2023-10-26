@@ -30,7 +30,9 @@ import { NavLeftComponent } from './theme/layout/admin/nav-bar/nav-left/nav-left
 import { NavRightComponent } from './theme/layout/admin/nav-bar/nav-right/nav-right.component';
 import '@progress/kendo-angular-intl/locales/tr/all';
 import '@progress/kendo-angular-intl/locales/tr/calendar';
-import { UpdateModalComponent } from './update-modal/update-modal.component';
+import { UpdateModalComponent } from './ui/update-modal/update-modal.component';
+import { DokumEditComponent } from './ui/dokum-edit/dokum-edit.component';
+import { OfflineRequestsComponent } from './ui/offline-requests/offline-requests.component';
 
 
 
@@ -53,6 +55,8 @@ registerLocaleData(LocaleTr);
     NavBarComponent,
     ConfigurationComponent,
     UpdateModalComponent,
+    DokumEditComponent,
+    OfflineRequestsComponent,
   ],
   imports: [
     BrowserModule,

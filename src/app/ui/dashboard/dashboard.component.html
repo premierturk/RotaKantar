@@ -1,44 +1,75 @@
 <div class="row">
   <app-card id="grid-card" class="col-md-8 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
     style="padding: 0px 5px">
-    <div class="row" style="align-items: flex-end">
-      <div class="form-group col-md-4 col-sm-4">
-        <label>Başlangıç Tarihi</label>
-        <kendo-datepicker [(ngModel)]="basTar"> </kendo-datepicker>
+    <div class="row p-1">
+      <div class="row col-md-6 col-sm-4">
+        <div class="col-md-4 vertical-text-center">
+          <label>Başlangıç Tarihi :</label>
+        </div>
+        <div class="col-md-8">
+          <kendo-datepicker (valueChange)="BindGrid()" [(ngModel)]="basTar">
+          </kendo-datepicker>
+        </div>
       </div>
-
-      <div class="form-group col-md-4 col-sm-4">
-        <label>Bitiş Tarihi</label>
-        <kendo-datepicker [(ngModel)]="bitTar"> </kendo-datepicker>
+      <div class="row col-md-6 col-sm-4">
+        <div class="col-md-4 vertical-text-center">
+          <label> Bitiş Tarihi :</label>
+        </div>
+        <div class="col-md-8">
+          <kendo-datepicker (valueChange)="BindGrid()" [(ngModel)]="bitTar">
+          </kendo-datepicker>
+        </div>
       </div>
-      <div class="form-group col-md-2 col-sm-2 text-center">
-        <button class="col-md-10 btn btn-primary" (click)="BindGrid()">
-          <i class="fa-list far fas pr-2"></i>Listele
+      <button class="p-2 pl-1 pr-1 btn btn-primary" (click)="BindGrid()">
+        <i class="fa-redo far fas"></i>
+      </button>
+    </div>
+    <div class="row m-0 pb-2 pt-1">
+      <div class="col-md-4 col-lg-3 col-xl-2 col-sm-4 text-center p-0">
+        <button class="col-md-10 btn excel-btn text-nowrap" (click)="excel()">
+          <i class="fa-file-excel far fas pr-2"></i>Excel
         </button>
       </div>
-      <div class="form-group col-md-2 col-sm-2 text-center">
-        <button [disabled]="!selectedItem" class="col-md-10 btn btn-info" (click)="Print(selectedItem)">
+      <div class="col-md-4 col-lg-3 col-xl-2 col-sm-4 text-center p-0">
+        <button [disabled]="!(selectedItem && selectedItem.TartiNo)" class="col-md-10 btn btn-info text-nowrap"
+          (click)="edit(selectedItem)">
+          <i class="fa-edit far fas pr-2"></i>Düzenle
+        </button>
+      </div>
+      <div class="col-md-4 col-lg-3  col-xl-2 col-sm-4 text-center p-0">
+        <button [disabled]="!selectedItem" class="col-md-10 btn btn-secondary text-nowrap"
+          (click)="print(selectedItem)">
           <i class="fa-print far fas pr-2"></i>Yazdır
         </button>
       </div>
     </div>
-
     <kendo-grid #grid [data]="view" [selectable]="true" [navigable]="true" [pageSize]="state.take" [size]="'small'"
       [skip]="state.skip" [sortable]="true" [group]="state.group" [filter]="state.filter" [sort]="state.sort"
       kendoGridSelectBy="TartiNo" [pageable]="true" [filterable]="true" [resizable]="true" [selectedKeys]="mySelections"
-      (cellClick)="onCellClick($event)" (dataStateChange)="dataStateChange($event)">
+      (cellClick)="onCellClick($event)" (dataStateChange)="dataStateChange($event)" [rowClass]="rowCallback">
+      <kendo-grid-excel fileName="Dokum.xlsx" [fetchData]="allData"></kendo-grid-excel>
+      <kendo-grid-column [width]="80" title="Tartı No" field="TartiNo"
+        [style]=" { 'white-space' : 'nowrap' }"></kendo-grid-column>
+      <kendo-grid-column title="İrsaliye No" field="IrsaliyeNo"
+        [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column title="Firma Adı" field="FirmaAdi" [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column title="Gittiği Yer" field="GittigiYer"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column title="Malzeme Adı" field="MalzemeAdi"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column [width]="100" title="Plaka" field="PlakaNo"></kendo-grid-column>
-      <kendo-grid-column [width]="100" title="Dara" field="Dara"
+      <kendo-grid-column [width]="75" title="Dara" field="Dara"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
-      <kendo-grid-column [width]="100" title="Net Tonaj" field="NetTonaj"></kendo-grid-column>
+      <kendo-grid-column [width]="95" title="Net Tonaj" field="NetTonaj"></kendo-grid-column>
       <kendo-grid-column [width]="145" title="Tarih" field="TartiTarih">
         <ng-template kendoGridCellTemplate let-dataItem="dataItem">
           {{ dataItem.TartiTarih | date : "dd/MM/yyyy HH:mm" }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column [width]="40" title="" field="Aciklama" [style]=" { 'white-space' : 'nowrap' }">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          <div style="text-align: center;"><i kendoTooltip class="fa-align-justify far fas"
+              title="{{dataItem.Aciklama}}"></i></div>
         </ng-template>
       </kendo-grid-column>
     </kendo-grid>
@@ -47,46 +78,46 @@
   <app-card id="kantar-panel-card" class="col-md-4 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
     style="padding: 0px 5px">
     <div class="modal-body" style="padding: 5px">
-      <div class="form-group">
+      <div class="mb-2">
         <label>Plaka</label>
         <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
           [data]="f_dsPlaka" [textField]="'PlakaNo'" [valueField]="'AracId'" [valuePrimitive]="true"
           (filterChange)="handleFilterArac($event)" [(ngModel)]="formData.AracId" (valueChange)="plakaSelected($event)">
         </kendo-dropdownlist>
       </div>
-      <div class="form-group">
+      <div class="mb-2">
         <label>Taş Ocağı</label>
         <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
           [data]="f_dsTasOcaklari" [textField]="'Adi'" [valueField]="'TasOcagiId'" [valuePrimitive]="true"
           (filterChange)="handleFilterTasOcak($event)" [(ngModel)]="formData.TasOcagiId">
         </kendo-dropdownlist>
       </div>
-      <div class="form-group">
+      <div class="mb-2">
         <label>Gideceği Yer</label>
         <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
           [data]="f_dsProjeAlanlari" [textField]="'AlanAdi'" [valueField]="'ProjeAlanId'" [valuePrimitive]="true"
           (filterChange)="handleProjeAlanlari($event)" [(ngModel)]="formData.ProjeAlaniId">
         </kendo-dropdownlist>
       </div>
-      <div class="form-group">
+      <div class="mb-2">
         <label>Firma</label>
         <kendo-textbox [disabled]="true" class="width" [clearButton]="true" [(ngModel)]="formData.FirmaAdi"
           placeholder="Firma">
         </kendo-textbox>
       </div>
-      <div class="form-group">
+      <div class="mb-2">
         <label>Dara</label>
         <kendo-numerictextbox [disabled]="true" class="width" [spinners]="false" format="#" [(ngModel)]="formData.Dara"
           placeholder="Dara">
         </kendo-numerictextbox>
       </div>
-      <div class="form-group">
+      <div class="mb-2">
         <label>Tonaj</label>
         <kendo-numerictextbox [disabled]="true" class="width" [spinners]="false" format="#" [(ngModel)]="formData.Tonaj"
           placeholder="Tonaj">
         </kendo-numerictextbox>
       </div>
-      <div class="form-group">
+      <div class="mb-2">
         <label>Malzeme Türü</label>
         <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
           [data]="f_dsMalzemeTur" [textField]="'MalzemeTuru'" [valueField]="'MalzemeTuruId'" [valuePrimitive]="true"
@@ -94,21 +125,25 @@
           placeholder="Başvuru Yılı Seçiniz">
         </kendo-dropdownlist>
       </div>
+      <div class="mb-2">
+        <label>İrsaliye No</label>
+        <kendo-textbox class="width" [clearButton]="true" [(ngModel)]="formData.IrsaliyeNo" placeholder="İrsaliye No">
+        </kendo-textbox>
+      </div>
+      <div class="mb-2">
+        <label>Açıklama</label>
+        <kendo-textarea class="width" [rows]="4" [resizable]="'none'" [(ngModel)]="formData.Aciklama"
+          placeholder="Açıklama">
+        </kendo-textarea>
+      </div>
     </div>
     <div class="modal-footer" style="justify-content: space-evenly">
       <app-button [buttonType]="ButtonType.Kaydet" (onclick)="save()" [isdisabled]="isLoading == true"></app-button>
 
-      <button class="btn btn-warning" (click)="daraGuncelle()">
+      <button class="btn btn-warning" (click)="daraGuncelle()"
+        [disabled]="formData.Tonaj<10000 || formData.Tonaj>25000">
         <i class="fa-truck far fas pr-2"></i>Dara Güncelle
       </button>
-      <!-- <button class="btn btn-warning" (click)="clearForm()"> Temizle</button> -->
-    </div>
-    <div [hidden]="!isLoading">
-      <div class="d-flex justify-content-center mb-2">
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
     </div>
   </app-card>
 </div>
