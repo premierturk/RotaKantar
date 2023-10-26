@@ -33,14 +33,11 @@ export class DashboardComponent implements OnInit {
   };
   public formData: any;
   private emptyFormData: any = { FirmaAdi: '', Tonaj: 0, Dara: 0, IrsaliyeNo: '', Aciklama: '' };
-  public dsPlaka: Array<any> = [];
-  public dsMalzemeTur: Array<any> = [];
-  public dsTasOcaklari: Array<any> = [];
-  public dsProjeAlanlari: Array<any> = [];
-  public f_dsPlaka: Array<any> = [];
-  public f_dsMalzemeTur: Array<any> = [];
-  public f_dsTasOcaklari: Array<any> = [];
-  public f_dsProjeAlanlari: Array<any> = [];
+
+  public ddPlaka: DropdownProps = new DropdownProps();
+  public ddMalzeme: DropdownProps = new DropdownProps();
+  public ddProjeAlani: DropdownProps = new DropdownProps();
+  public ddTasOcagi: DropdownProps = new DropdownProps();
   public selectedItem: any = {};
   public saveDisabled: boolean = false;
   public barcode: string = '';
@@ -65,7 +62,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formData = Object.assign(this.emptyFormData);
+    this.initializeFormData();
     var now = new Date();
     this.basTar = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     this.bitTar = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -80,7 +77,7 @@ export class DashboardComponent implements OnInit {
       console.log(this.barcode);
       var plaka = this.plakaFromBarcode(this.barcode);
       console.log(plaka);
-      const arac = this.dsPlaka.find((x) => plaka.toUpperCase() == x.PlakaNo);
+      const arac = this.ddPlaka.list.find((x) => plaka.toUpperCase() == x.PlakaNo);
       if (arac != undefined && arac != null) {
         this.plakaSelected(arac.AracId);
       }
@@ -105,11 +102,10 @@ export class DashboardComponent implements OnInit {
   }
 
   public async plakaSelected(a) {
-    const arac = this.dsPlaka.filter((x) => x.AracId == a)[0];
+    const arac = this.ddPlaka.list.filter((x) => x.AracId == a)[0];
     if (!AppNetworkStatus.isOffline) {
       this.isLoading = true;
-      const res = await this.ds.get(`${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`);
-      //if (res.TasOcagiId == undefined || res.TasOcagiId == null) Notiflix.Notify.failure("");
+      const res = await this.ds.getNoMess(`${this.url}/api/Kantar/SonTasOcagiCikis?AracId=${arac.AracId}&ProjeId=${this.user.ProjeId}`);
       this.isLoading = false;
       this.formData.TasOcagiId = res.TasOcagiId;
       this.formData.TasOcagiGirisTarihi = res.TasOcagiGirisTarihi;
@@ -117,7 +113,7 @@ export class DashboardComponent implements OnInit {
       this.formData.Longitude = res.Longitude;
     }
 
-    this.fillForm(arac);
+    this.fillAracForm(arac);
   }
 
   async excel() {
@@ -134,26 +130,33 @@ export class DashboardComponent implements OnInit {
     return result;
   }
 
-  public fillForm(arac) {
+  public fillAracForm(arac) {
     if (arac != undefined && arac != null) {
       this.formData.AracId = arac.AracId;
       this.formData.Dara = arac.Dara;
       this.formData.FirmaAdi = arac.FirmaAdi;
       this.formData.FirmaId = arac.FirmaId;
+
+      if (arac.DaraGuncellemeTarihi == null) return;
+
+      if (moment(new Date()).diff(moment(arac.DaraGuncellemeTarihi), 'days') > 1) Notiflix.Notify.warning("Lütfen aracın darasını güncelleyin!");
+
     }
   }
 
   public async BindForm() {
     this.user = JSON.parse(localStorage.getItem('user'));
 
-    this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
-    this.handleFilterArac('');
-    this.dsMalzemeTur = await this.ds.get(`${this.url}/api/MalzemeTuruList`);
-    this.handleFilterMalzeme('');
-    this.dsTasOcaklari = await this.ds.get(`${this.url}/api/Kantar/TasOcaklariMini?ProjeId=${this.user.ProjeId}`);
-    this.handleFilterTasOcak('');
-    this.dsProjeAlanlari = await this.ds.get(`${this.url}/api/Kantar/ProjeAlanlari?ProjeId=${this.user.ProjeId}`);
-    this.handleProjeAlanlari('');
+    this.ddPlaka = new DropdownProps("PlakaNo", await this.ds.get(`${this.url}/api/AracList`));
+    this.ddMalzeme = new DropdownProps("MalzemeTuru", await this.ds.get(`${this.url}/api/MalzemeTuruList`));
+    this.ddTasOcagi = new DropdownProps("Adi", await this.ds.get(`${this.url}/api/Kantar/TasOcaklariMini?ProjeId=${this.user.ProjeId}`));
+    this.ddProjeAlani = new DropdownProps("AlanAdi", await this.ds.get(`${this.url}/api/Kantar/ProjeAlanlari?ProjeId=${this.user.ProjeId}`));
+
+  }
+
+  public initializeFormData() {
+    this.formData = {};
+    for (const property in this.emptyFormData) this.formData[property] = this.emptyFormData[property];
   }
 
   public async BindGrid() {
@@ -169,22 +172,6 @@ export class DashboardComponent implements OnInit {
 
   public onCellClick(a) {
     this.selectedItem = a.dataItem;
-  }
-
-  public handleFilterArac(keyword) {
-    this.f_dsPlaka = this.dsPlaka.filter((x) => x.PlakaNo.includes(keyword.toUpperCase()));
-  }
-
-  public handleFilterMalzeme(keyword) {
-    this.f_dsMalzemeTur = this.dsMalzemeTur.filter((x) => x.MalzemeTuru.includes(keyword.toUpperCase()));
-  }
-
-  public handleFilterTasOcak(keyword) {
-    this.f_dsTasOcaklari = this.dsTasOcaklari.filter((x) => x.Adi.toUpperCase().includes(keyword.toUpperCase()));
-  }
-
-  public handleProjeAlanlari(keyword) {
-    this.f_dsProjeAlanlari = this.dsProjeAlanlari.filter((x) => x.AlanAdi.toUpperCase().includes(keyword.toUpperCase()));
   }
 
   public print(data) {
@@ -227,7 +214,7 @@ export class DashboardComponent implements OnInit {
     this.isLoading = false;
     if (result.success) {
       this.print(result.data);
-      this.formData = Object.assign(this.emptyFormData);
+      this.initializeFormData();
       this.BindGrid();
     }
   }
@@ -238,7 +225,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    const arac = this.dsPlaka.filter((x) => x.AracId == this.formData.AracId)[0];
+    const arac = this.ddPlaka.list.filter((x) => x.AracId == this.formData.AracId)[0];
 
     const willDelete = await Swal.fire({
       title: `${arac.PlakaNo} plakalı aracın darası ${this.formData.Tonaj} kg olarak güncellensin mi?`,
@@ -256,9 +243,8 @@ export class DashboardComponent implements OnInit {
     var result = await this.ds.post(`${this.url}/api/Kantar/Dara`, { AracId: this.formData.AracId, Dara: this.formData.Tonaj });
     this.isLoading = false;
     if (result.success) {
-      this.formData = Object.assign(this.emptyFormData);
-      this.dsPlaka = await this.ds.get(`${this.url}/api/AracList`);
-      this.handleFilterArac('');
+      this.initializeFormData();
+      this.ddPlaka = new DropdownProps("PlakaNo", await this.ds.get(`${this.url}/api/AracList`));
     }
   }
 
@@ -273,5 +259,21 @@ export class DashboardComponent implements OnInit {
     else if (this.formData.Tonaj == null || this.formData.Tonaj < 1) s = 'Tonaj bulunamadı.';
     else if (this.formData.ProjeAlaniId == null) s = 'Proje Alanı bulunamadı.';
     return s;
+  }
+}
+
+class DropdownProps {
+  list: any[] = [];
+  f_list: any[] = [];
+  displayField: string = "";
+
+  constructor(displayField = "", list = []) {
+    this.displayField = displayField;
+    this.list = list;
+    this.f_list = list;
+  }
+
+  onChange(keyword) {
+    this.f_list = this.list.filter((x) => x[this.displayField].includes(keyword.toUpperCase()));
   }
 }

@@ -55,6 +55,15 @@ export class DataSource {
     }
   }
 
+  async getNoMess(url: string) {
+    try {
+      const resp = await httpClient.get(url);
+      return resp.data;
+    } catch (err) {
+      return err;
+    }
+  }
+
   async post(url: string, data: any) {
     if (AppNetworkStatus.isOffline) return this.offlinePost(url, data);
     try {
