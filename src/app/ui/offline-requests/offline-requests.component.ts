@@ -42,8 +42,8 @@ export class OfflineRequestsComponent implements OnInit {
     for (let i = 0; i < this.list.length; i++) {
       const request = this.list[i];
       var res;
-      if (request.type == "POST") res = await this.ds.post(request.url, request.data);
-      if (request.type == "PUT") res = await this.ds.put(request.url, request.data);
+      if (request.type == "POST") res = await this.ds.postNoMess(request.url, request.data);
+      if (request.type == "PUT") res = await this.ds.postNoMess(request.url, request.data);
 
       if (res.success) this.list[i] = null;
       this.percent = ((i + 1) / this.list.length) * 100;

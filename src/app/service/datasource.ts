@@ -88,13 +88,10 @@ export class DataSource {
       const resp = await httpClient.post(url, data);
       if (resp.status == 200) {
         success = true;
-        //Notiflix.Notify.success('Başarılı');
       } else {
-        //Notiflix.Notify.failure(resp.data.toString());
       }
       return { success: success, data: resp.data };
     } catch (err) {
-      this.handleErrorResponse(err);
       return { success: false };
     }
   }
@@ -113,6 +110,20 @@ export class DataSource {
       return { success: success, data: resp.data };
     } catch (err) {
       this.handleErrorResponse(err);
+      return { success: false };
+    }
+  }
+
+  async putNoMess(url: string, data: any) {
+    try {
+      var success = false;
+      const resp = await httpClient.put(url, data);
+      if (resp.status == 200) {
+        success = true;
+      } else {
+      }
+      return { success: success, data: resp.data };
+    } catch (err) {
       return { success: false };
     }
   }
@@ -156,6 +167,7 @@ export class DataSource {
           PlakaNo: arac.PlakaNo,
           DaraTarih: arac.DaraGuncellemeTarihi,
           TartiTarih: moment(new Date()).toISOString(),
+          TarihSaat: moment(new Date()).toISOString(),
           MalzemeAdi: malzeme.MalzemeTuru,
           FirmaAdi: arac.FirmaAdi,
           GeldigiYer: tasOcagi.Adi,
@@ -167,10 +179,15 @@ export class DataSource {
           NetTonaj: data.Tonaj - arac.Dara
         };
         //localdeki dokum listesini guncelleme
-        var dokumList = JSON.parse(window.localStorage.getItem("KantarListV3"));
+        var dokumList = JSON.parse(window.localStorage.getItem("KantarListV4"));
         if (dokumList == null) dokumList = [];
-        dokumList.push(Object.assign(fisData, data));
-        window.localStorage.setItem("KantarListV3", JSON.stringify(dokumList));
+        var fullData = Object.assign(fisData, data);
+
+        requestList[requestList.length - 1].data = fullData;
+        window.localStorage.setItem("offlineRequests", JSON.stringify(requestList));
+
+        dokumList.push(fullData);
+        window.localStorage.setItem("KantarListV4", JSON.stringify(dokumList));
 
         return { success: true, data: fisData };
       } else if (url.includes("api/Kantar/Dara")) {
@@ -203,7 +220,7 @@ export class DataSource {
         const projeAlani = JSON.parse(window.localStorage.getItem("ProjeAlanlari")).find(a => a.ProjeAlanId == data.ProjeAlaniId);
 
         //localdeki dokum listesini guncelleme
-        var dokumList = JSON.parse(window.localStorage.getItem("KantarListV3"));
+        var dokumList = JSON.parse(window.localStorage.getItem("KantarListV4"));
         var index = dokumList.findIndex(a => a.TartiNo == data.TartiNo)
         dokumList[index].TasOcagiId = data.TasOcagiId;
         dokumList[index].GeldigiYer = tasOcagi.Adi;
@@ -211,7 +228,7 @@ export class DataSource {
         dokumList[index].GittigiYer = projeAlani.AlanAdi;
         dokumList[index].MalzemeTipiId = data.MalzemeTipiId;
         dokumList[index].MalzemeAdi = malzeme.MalzemeTuru;
-        window.localStorage.setItem("KantarListV3", JSON.stringify(dokumList));
+        window.localStorage.setItem("KantarListV4", JSON.stringify(dokumList));
       }
       return { success: true, data: data };
     } catch (error) {

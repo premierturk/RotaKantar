@@ -34,8 +34,10 @@ export class AppComponent implements OnInit {
       this._electronService.ipcRenderer.on('KantarAdi', (event, data) => window.localStorage.setItem("KantarAdi", data));
     }
     window.addEventListener("online", () => {
-      AppNetworkStatus.isOffline = false;
-      this.checkOfflineRequests();
+      setTimeout(() => {
+        AppNetworkStatus.isOffline = false;
+        this.checkOfflineRequests();
+      }, 2000);
     });
 
     window.addEventListener("offline", () => {

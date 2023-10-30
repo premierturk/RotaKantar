@@ -161,7 +161,7 @@ export class DashboardComponent implements OnInit {
 
   public async BindGrid() {
     this.clearSelections();
-    this.list = await this.ds.get(`${this.url}/api/KantarListV3?basTar=${moment(this.basTar).format('yyyy-MM-DD')}&bitTar=${moment(this.bitTar).add(1, 'days').format('yyyy-MM-DD')}`);
+    this.list = await this.ds.get(`${this.url}/api/KantarListV4?basTar=${moment(this.basTar).format('yyyy-MM-DD')}&bitTar=${moment(this.bitTar).add(1, 'days').format('yyyy-MM-DD')}&tanimKantarId=${window.localStorage.getItem("KantarId")}`);
     this.view = process(this.list, this.state);
   }
 
