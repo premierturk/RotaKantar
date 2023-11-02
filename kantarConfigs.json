@@ -1,7 +1,7 @@
 {
   "debugKantar": {
-    "kantarId":1,
-    "kantarAdi":"DEBUG Kantar",
+    "kantarId": 1,
+    "kantarAdi": "DEBUG Kantar",
     "kantar": true,
     "printerName": "EPSON LX-350",
     "isPrinterOn": false,
@@ -14,11 +14,11 @@
     }
   },
   "cokcapinar": {
-    "kantarId":2,
-    "kantarAdi":"Çokçapınar Kantar",
+    "kantarId": 2,
+    "kantarAdi": "Çokçapınar Kantar",
     "kantar": true,
     "isPrinterOn": true,
-    "printerName": "EPSON LX-350",
+    "printerName": "EPSON LX-350 ESC/P (Kopya 1)",
     "serialPort": {
       "path": "COM2",
       "autoOpen": false,
@@ -28,11 +28,11 @@
     }
   },
   "nurdagi": {
-    "kantarId":5,
-    "kantarAdi":"Nurdağı Kantar",
+    "kantarId": 5,
+    "kantarAdi": "Nurdağı Kantar",
     "kantar": true,
-    "isPrinterOn": false,
-    "printerName": "EPSON LX-350",
+    "isPrinterOn": true,
+    "printerName": "EPSON LX-350 ESC/P (Kopya 2)",
     "serialPort": {
       "path": "COM3",
       "autoOpen": false,
@@ -42,11 +42,11 @@
     }
   },
   "yakapinar": {
-    "kantarId":6,
-    "kantarAdi":"Yakapınar Kantar",
+    "kantarId": 6,
+    "kantarAdi": "Yakapınar Kantar",
     "kantar": true,
-    "isPrinterOn": false,
-    "printerName": "EPSON LX-350",
+    "isPrinterOn": true,
+    "printerName": "EPSON LX-350 (Kopya 1)",
     "serialPort": {
       "path": "COM3",
       "autoOpen": false,
@@ -56,13 +56,13 @@
     }
   },
   "ayhanlar": {
-    "kantarId":7,
-    "kantarAdi":"Ayhanlar Kantar",
+    "kantarId": 7,
+    "kantarAdi": "Ayhanlar Kantar",
     "kantar": true,
-    "isPrinterOn": false,
-    "printerName": "EPSON LX-350",
+    "isPrinterOn": true,
+    "printerName": "EPSON LX-350 ESC/P (Kopya 2)",
     "serialPort": {
-      "path": "COM2",
+      "path": "COM3",
       "autoOpen": false,
       "baudRate": 9600,
       "dataBits": 8,
@@ -70,11 +70,11 @@
     }
   },
   "arkas": {
-    "kantarId":8,
-    "kantarAdi":"Arkas Stok Sahası",
+    "kantarId": 8,
+    "kantarAdi": "Arkas Stok Sahası",
     "kantar": true,
-    "isPrinterOn": false,
-    "printerName": "EPSON LX-350",
+    "isPrinterOn": true,
+    "printerName": "EPSON LX-350 ESC/P (Kopya 3)",
     "serialPort": {
       "path": "COM2",
       "autoOpen": false,
@@ -84,11 +84,11 @@
     }
   },
   "mamure": {
-    "kantarId":9,
-    "kantarAdi":"Mamure Kantar",
+    "kantarId": 9,
+    "kantarAdi": "Mamure Kantar",
     "kantar": true,
-    "isPrinterOn": false,
-    "printerName": "EPSON LX-350",
+    "isPrinterOn": true,
+    "printerName": "EPSON LX-350 ESC/P",
     "serialPort": {
       "path": "COM2",
       "autoOpen": false,
@@ -98,8 +98,8 @@
     }
   },
   "bereket": {
-    "kantarId":10,
-    "kantarAdi":"Bereket Kantar",
+    "kantarId": 10,
+    "kantarAdi": "Bereket Kantar",
     "kantar": true,
     "isPrinterOn": false,
     "printerName": "EPSON LX-350",
@@ -110,5 +110,5 @@
       "dataBits": 8,
       "parity": "none"
     }
-  } 
+  }
 }

@@ -178,8 +178,17 @@ export class DataSource {
           Tonaj: data.Tonaj,
           NetTonaj: data.Tonaj - arac.Dara
         };
+
         //localdeki dokum listesini guncelleme
         var dokumList = JSON.parse(window.localStorage.getItem("KantarListV4"));
+
+        if (dokumList.some(dokum => dokum.PlakaNo == arac.PlakaNo && moment(new Date()).diff(dokum.TartiTarih, 'minutes') < 10)) {
+          requestList.pop();
+          window.localStorage.setItem("offlineRequests", JSON.stringify(requestList));
+          Notiflix.Notify.failure("Tekrarlayan Geçiş.");
+          return { success: false, data: {} };
+        }
+
         if (dokumList == null) dokumList = [];
         var fullData = Object.assign(fisData, data);
 
@@ -187,6 +196,9 @@ export class DataSource {
         window.localStorage.setItem("offlineRequests", JSON.stringify(requestList));
 
         dokumList.push(fullData);
+        dokumList = dokumList.sort(function (a, b) {
+          return new Date(b.TartiTarih).getTime() - new Date(a.TartiTarih).getTime();
+        });
         window.localStorage.setItem("KantarListV4", JSON.stringify(dokumList));
 
         return { success: true, data: fisData };

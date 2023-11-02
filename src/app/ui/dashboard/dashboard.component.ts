@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef, HostListener, ViewEncapsulation } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DataStateChangeEvent, GridComponent, GridDataResult, RowClassArgs } from '@progress/kendo-angular-grid';
-import { State, process } from '@progress/kendo-data-query';
+import { State, aggregateBy, process } from '@progress/kendo-data-query';
 import { ElectronService } from 'ngx-electron';
 import { ButtonType, DataSource } from 'src/app/service/datasource';
 import { environment } from 'src/environment';
@@ -26,14 +26,14 @@ export class DashboardComponent implements OnInit {
   public ButtonType = ButtonType;
   public fileExcelIcon: SVGIcon = fileExcelIcon;
   public view: GridDataResult;
-  public list: any[];
+  public list: any[] = [];
   public state: State = {
     skip: 0,
-    take: 20,
+    take: 16,
   };
   public formData: any;
   private emptyFormData: any = { FirmaAdi: '', Tonaj: 0, Dara: 0, IrsaliyeNo: '', Aciklama: '' };
-
+  public total: any = { "NetTonaj": { "sum": 0 } };
   public ddPlaka: DropdownProps = new DropdownProps();
   public ddMalzeme: DropdownProps = new DropdownProps();
   public ddProjeAlani: DropdownProps = new DropdownProps();
@@ -123,8 +123,8 @@ export class DashboardComponent implements OnInit {
   public allData(): ExcelExportData {
     var excelList = this.list;
     for (var item of excelList) {
-      item.TartiTarih = moment(item.TartiTarih).format("DD/MM/yyyy HH:mm");
-
+      item.TartiTarih = moment(new Date(item.TartiTarih)).format("DD/MM/yyyy HH:mm");
+      if (item.DaraGuncellemeTarihi != null) item.DaraGuncellemeTarihi = moment(new Date(item.DaraGuncellemeTarihi)).format("DD/MM/yyyy HH:mm");
     }
     const result: ExcelExportData = process(excelList, {});
     return result;
@@ -138,8 +138,8 @@ export class DashboardComponent implements OnInit {
       this.formData.FirmaId = arac.FirmaId;
 
       if (arac.DaraGuncellemeTarihi == null) return;
-
-      if (moment(new Date()).diff(moment(arac.DaraGuncellemeTarihi), 'days') > 1) Notiflix.Notify.warning("Lütfen aracın darasını güncelleyin!");
+      var daraTarih = moment(arac.DaraGuncellemeTarihi);
+      if (moment(new Date()).diff(daraTarih, 'days') > 1) Notiflix.Notify.warning("Lütfen aracın darasını güncelleyin! Son güncelleme tarihi : " + daraTarih.format("DD/MM/yyyy HH:mm"));
 
     }
   }
@@ -163,6 +163,8 @@ export class DashboardComponent implements OnInit {
     this.clearSelections();
     this.list = await this.ds.get(`${this.url}/api/KantarListV4?basTar=${moment(this.basTar).format('yyyy-MM-DD')}&bitTar=${moment(this.bitTar).add(1, 'days').format('yyyy-MM-DD')}&tanimKantarId=${window.localStorage.getItem("KantarId")}`);
     this.view = process(this.list, this.state);
+    this.total = aggregateBy(this.list, [{ field: 'NetTonaj', aggregate: 'sum' }]);
+
   }
 
   public dataStateChange(state: DataStateChangeEvent): void {

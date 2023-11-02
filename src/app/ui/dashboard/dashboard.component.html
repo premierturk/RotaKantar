@@ -1,5 +1,5 @@
 <div class="row">
-  <app-card id="grid-card" class="col-md-8 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
+  <app-card id="grid-card" class="col-md-9 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
     style="padding: 0px 5px">
     <div class="row p-1">
       <div class="row col-md-6 col-sm-4">
@@ -47,57 +47,65 @@
       [skip]="state.skip" [sortable]="true" [group]="state.group" [filter]="state.filter" [sort]="state.sort"
       kendoGridSelectBy="TartiNo" [pageable]="true" [filterable]="true" [resizable]="true" [selectedKeys]="mySelections"
       (cellClick)="onCellClick($event)" (dataStateChange)="dataStateChange($event)" [rowClass]="rowCallback">
-      <kendo-grid-excel fileName="Dokum.xlsx" [fetchData]="allData"></kendo-grid-excel>
+      <kendo-grid-excel fileName="Dokum.xls" [fetchData]="allData"></kendo-grid-excel>
       <kendo-grid-column [width]="80" title="Tartı No" field="TartiNo"
         [style]=" { 'white-space' : 'nowrap' }"></kendo-grid-column>
-      <kendo-grid-column title="İrsaliye No" field="IrsaliyeNo"
-        [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column title="Firma Adı" field="FirmaAdi" [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
+      <kendo-grid-column title="Geldiği Yer" field="GeldigiYer"
+        [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column title="Gittiği Yer" field="GittigiYer"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column title="Malzeme Adı" field="MalzemeAdi"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column [width]="100" title="Plaka" field="PlakaNo"></kendo-grid-column>
+      <kendo-grid-column [width]="145" title="Dara Tarihi" field="DaraGuncellemeTarihi">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          {{ dataItem.DaraGuncellemeTarihi | date : "dd/MM/yyyy HH:mm" }}
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column [width]="75" title="Dara" field="Dara"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
-      <kendo-grid-column [width]="95" title="Net Tonaj" field="NetTonaj"></kendo-grid-column>
+      <kendo-grid-column [width]="200" title="Net Tonaj" field="NetTonaj">
+        <ng-template kendoGridFooterTemplate let-column="column">Toplam:
+          {{total["NetTonaj"]==undefined ? 0 : total["NetTonaj"].sum | number:"1.0-0"}} kg</ng-template>
+      </kendo-grid-column>
       <kendo-grid-column [width]="145" title="Tarih" field="TartiTarih">
         <ng-template kendoGridCellTemplate let-dataItem="dataItem">
           {{ dataItem.TartiTarih | date : "dd/MM/yyyy HH:mm" }}
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column [width]="40" title="" field="Aciklama" [style]=" { 'white-space' : 'nowrap' }">
-        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
-          <div *ngIf="dataItem.Aciklama" style="text-align: center;"><i kendoTooltip class="fa-comment-alt far fas"
-              title="{{dataItem.Aciklama}}"></i>
-          </div>
-        </ng-template>
+      <kendo-grid-column [width]="150" title="" title="Açıklama" field="Aciklama"
+        [style]=" { 'white-space' : 'nowrap' }">
       </kendo-grid-column>
+      <kendo-grid-column title="İrsaliye No" field="IrsaliyeNo"
+        [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
     </kendo-grid>
   </app-card>
 
-  <app-card id="kantar-panel-card" class="col-md-4 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
+  <app-card id="kantar-panel-card" class="col-md-3 col-sm-12 col-xs-12" [options]="false" [hidHeader]="true"
     style="padding: 0px 5px">
     <div class="modal-body" style="padding: 5px">
       <div class="mb-2">
         <label>Plaka</label>
-        <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
-          [data]="ddPlaka.f_list" [textField]="ddPlaka.displayField" [valueField]="'AracId'" [valuePrimitive]="true"
-          (filterChange)="ddPlaka.onChange($event)" [(ngModel)]="formData.AracId" (valueChange)="plakaSelected($event)">
+        <kendo-dropdownlist [size]="'small'" [popupSettings]="{ appendTo: 'component' }" [filterable]="true"
+          class="width" [data]="ddPlaka.f_list" [textField]="ddPlaka.displayField" [valueField]="'AracId'"
+          [valuePrimitive]="true" (filterChange)="ddPlaka.onChange($event)" [(ngModel)]="formData.AracId"
+          (valueChange)="plakaSelected($event)">
         </kendo-dropdownlist>
       </div>
       <div class="mb-2">
         <label>Taş Ocağı</label>
-        <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
-          [data]="ddTasOcagi.f_list" [textField]="ddTasOcagi.displayField" [valueField]="'TasOcagiId'"
+        <kendo-dropdownlist [size]="'small'" [popupSettings]="{ appendTo: 'component' }" [filterable]="true"
+          class="width" [data]="ddTasOcagi.f_list" [textField]="ddTasOcagi.displayField" [valueField]="'TasOcagiId'"
           [valuePrimitive]="true" (filterChange)="ddTasOcagi.onChange($event)" [(ngModel)]="formData.TasOcagiId">
         </kendo-dropdownlist>
       </div>
       <div class="mb-2">
         <label>Gideceği Yer</label>
-        <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
-          [data]="ddProjeAlani.f_list" [textField]="ddProjeAlani.displayField" [valueField]="'ProjeAlanId'"
-          [valuePrimitive]="true" (filterChange)="ddProjeAlani.onChange($event)" [(ngModel)]="formData.ProjeAlaniId">
+        <kendo-dropdownlist [size]="'small'" [popupSettings]="{ appendTo: 'component' }" [filterable]="true"
+          class="width" [data]="ddProjeAlani.f_list" [textField]="ddProjeAlani.displayField"
+          [valueField]="'ProjeAlanId'" [valuePrimitive]="true" (filterChange)="ddProjeAlani.onChange($event)"
+          [(ngModel)]="formData.ProjeAlaniId">
         </kendo-dropdownlist>
       </div>
       <div class="mb-2">
@@ -120,8 +128,8 @@
       </div>
       <div class="mb-2">
         <label>Malzeme Türü</label>
-        <kendo-dropdownlist [popupSettings]="{ appendTo: 'component' }" [filterable]="true" class="width"
-          [data]="ddMalzeme.f_list" [textField]="ddMalzeme.displayField" [valueField]="'MalzemeTuruId'"
+        <kendo-dropdownlist [size]="'small'" [popupSettings]="{ appendTo: 'component' }" [filterable]="true"
+          class="width" [data]="ddMalzeme.f_list" [textField]="ddMalzeme.displayField" [valueField]="'MalzemeTuruId'"
           [valuePrimitive]="true" (filterChange)="ddMalzeme.onChange($event)" [(ngModel)]="formData.MalzemeTipiId"
           placeholder="Başvuru Yılı Seçiniz">
         </kendo-dropdownlist>
@@ -133,7 +141,7 @@
       </div>
       <div class="mb-2">
         <label>Açıklama</label>
-        <kendo-textarea class="width" [rows]="4" [resizable]="'none'" [(ngModel)]="formData.Aciklama"
+        <kendo-textarea class="width" [rows]="3" [resizable]="'none'" [(ngModel)]="formData.Aciklama"
           placeholder="Açıklama">
         </kendo-textarea>
       </div>
