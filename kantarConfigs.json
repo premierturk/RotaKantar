@@ -18,9 +18,9 @@
     "kantarAdi": "Çokçapınar Kantar",
     "kantar": true,
     "isPrinterOn": true,
-    "printerName": "EPSON LX-350 ESC/P (Kopya 1)",
+    "printerName": "EPSON LX-350 ESC/P (Kopya 2)",
     "serialPort": {
-      "path": "COM2",
+      "path": "COM5",
       "autoOpen": false,
       "baudRate": 9600,
       "dataBits": 8,
