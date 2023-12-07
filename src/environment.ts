@@ -1,6 +1,6 @@
 export const environment = {
-  production: true,
+  production: false,
   apiUrl: 'https://rota.ronesans.com/Api',
   //apiUrl: 'http://rota.premierturk.com/Api',
-  //apiUrl: 'http://10.210.210.35:3656/Api',
+  //apiUrl: 'http://10.210.210.105:3656/Api',
 };

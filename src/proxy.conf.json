@@ -1,6 +1,6 @@
 {
-    "/api": {
-        "target": "http://10.210.210.35:3656", 
-        "secure": false
-    }
+  "/api": {
+    "target": "http://10.210.210.105:3656",
+    "secure": false
+  }
 }

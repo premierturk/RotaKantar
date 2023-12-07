@@ -164,7 +164,6 @@ export class DashboardComponent implements OnInit {
     this.list = await this.ds.get(`${this.url}/api/KantarListV4?basTar=${moment(this.basTar).format('yyyy-MM-DD')}&bitTar=${moment(this.bitTar).add(1, 'days').format('yyyy-MM-DD')}&tanimKantarId=${window.localStorage.getItem("KantarId")}`);
     this.view = process(this.list, this.state);
     this.total = aggregateBy(this.list, [{ field: 'NetTonaj', aggregate: 'sum' }]);
-
   }
 
   public dataStateChange(state: DataStateChangeEvent): void {
@@ -247,6 +246,34 @@ export class DashboardComponent implements OnInit {
     if (result.success) {
       this.initializeFormData();
       this.ddPlaka = new DropdownProps("PlakaNo", await this.ds.get(`${this.url}/api/AracList`));
+    }
+  }
+
+  async iade() {
+    if (this.formData.AracId == null || this.formData.Tonaj == null || this.formData.Tonaj < 1) {
+      Notiflix.Notify.failure('Araç ve ya tonaj bilgisi alınamadı!');
+      return;
+    }
+    const arac = this.ddPlaka.list.filter((x) => x.AracId == this.formData.AracId)[0];
+    const willDelete = await Swal.fire({
+      title: `${arac.PlakaNo} plakalı aracın ${this.formData.Tonaj} kg olan iadesini onaylıyor musunuz?`,
+      type: 'warning',
+      showCloseButton: false,
+      showCancelButton: true,
+      allowOutsideClick: false,
+      cancelButtonText: 'Hayır',
+      confirmButtonText: 'Evet',
+    });
+    if (willDelete.value != true) return;
+
+    this.isLoading = true;
+    this.formData.TanimlarKantarId = await window.localStorage.getItem("KantarId");
+    var result = await this.ds.put(`${this.url}/api/Iade?AracId=${this.formData.AracId}&TanimlarKantarId=${this.formData.TanimlarKantarId}&IadeTonaj=${this.formData.Tonaj}&IsIade=true`, "");
+    this.isLoading = false;
+
+    if (result.success) {
+      this.initializeFormData();
+      this.BindGrid();
     }
   }
 
