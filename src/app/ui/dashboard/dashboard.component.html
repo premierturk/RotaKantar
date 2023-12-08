@@ -50,11 +50,27 @@
       <kendo-grid-excel fileName="Dokum.xls" [fetchData]="allData"></kendo-grid-excel>
       <kendo-grid-column [width]="80" title="Tartı No" field="TartiNo"
         [style]=" { 'white-space' : 'nowrap' }"></kendo-grid-column>
-      <kendo-grid-column title="Firma Adı" field="FirmaAdi" [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
-      <kendo-grid-column title="Geldiği Yer" field="GeldigiYer"
-        [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
-      <kendo-grid-column title="Gittiği Yer" field="GittigiYer"
-        [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
+      <kendo-grid-column title="Firma Adı" field="FirmaAdi" [style]="{ 'white-space': 'nowrap' }">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span kendoTooltip title="{{dataItem?.FirmaAdi}}">
+            {{dataItem?.FirmaAdi}}
+          </span>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Geldiği Yer" field="GeldigiYer" [style]="{ 'white-space': 'nowrap' }">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span kendoTooltip title="{{dataItem?.GeldigiYer}}">
+            {{dataItem?.GeldigiYer}}
+          </span>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Gittiği Yer" field="GittigiYer" [style]="{ 'white-space': 'nowrap' }">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span kendoTooltip title="{{dataItem?.GittigiYer}}">
+            {{dataItem?.GittigiYer}}
+          </span>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column title="Malzeme Adı" field="MalzemeAdi"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column [width]="100" title="Plaka" field="PlakaNo"></kendo-grid-column>
@@ -63,9 +79,11 @@
           {{ dataItem.DaraGuncellemeTarihi | date : "dd/MM/yyyy HH:mm" }}
         </ng-template>
       </kendo-grid-column>
+      <kendo-grid-column [width]="85" title="Tonaj" field="Tonaj"
+        [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column [width]="75" title="Dara" field="Dara"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
-      <kendo-grid-column [width]="200" title="Net Tonaj" field="NetTonaj">
+      <kendo-grid-column [width]="100" title="Net Tonaj" field="NetTonaj">
         <ng-template kendoGridFooterTemplate let-column="column">Toplam:
           {{total["NetTonaj"]==undefined ? 0 : total["NetTonaj"].sum | number:"1.0-0"}} kg</ng-template>
       </kendo-grid-column>
@@ -76,6 +94,11 @@
       </kendo-grid-column>
       <kendo-grid-column [width]="150" title="" title="Açıklama" field="Aciklama"
         [style]=" { 'white-space' : 'nowrap' }">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span kendoTooltip title="{{dataItem?.Aciklama}}">
+            {{dataItem?.Aciklama}}
+          </span>
+        </ng-template>
       </kendo-grid-column>
       <kendo-grid-column title="İrsaliye No" field="IrsaliyeNo"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>

@@ -1,27 +1,30 @@
 .card-body {
-    padding: 5px !important;
+  padding: 5px !important;
 }
 
 kendo-grid-column {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
-.vertical-text-center{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.vertical-text-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.excel-btn:hover{
-    color: white;
-    background-color: #025b32;
-    border-color: #045d33;
+.excel-btn:hover {
+  color: white;
+  background-color: #025b32;
+  border-color: #045d33;
 }
-.excel-btn{
-    color: white;
-    background-color: #058b4d;
-    border-color: #058b4d;
+.excel-btn {
+  color: white;
+  background-color: #058b4d;
+  border-color: #058b4d;
 }
 
 .k-grid tr.localData {
-    background-color: #fce28f !important;
-} 
+  background-color: #fce28f !important;
+}
+.k-grid tr.iadeData {
+  background-color: #dfbcff !important;
+}

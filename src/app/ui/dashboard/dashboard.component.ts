@@ -190,7 +190,7 @@ export class DashboardComponent implements OnInit {
   }
 
   public rowCallback = (context: RowClassArgs) => {
-    return { localData: context.dataItem.TartiNo == null };
+    return { localData: context.dataItem.TartiNo == null, iadeData: context.dataItem.Iade == "Evet" };
   };
 
   public edit(a) {
