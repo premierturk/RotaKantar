@@ -34,7 +34,7 @@
     "isPrinterOn": true,
     "printerName": "EPSON LX-350 ESC/P (Kopya 2)",
     "serialPort": {
-      "path": "COM3",
+      "path": "COM2",
       "autoOpen": false,
       "baudRate": 9600,
       "dataBits": 8,
@@ -105,6 +105,20 @@
     "printerName": "EPSON LX-350",
     "serialPort": {
       "path": "COM2",
+      "autoOpen": false,
+      "baudRate": 9600,
+      "dataBits": 8,
+      "parity": "none"
+    }
+  },
+  "toprakkale": {
+    "kantarId": 11,
+    "kantarAdi": "Toprakkale Kantar",
+    "kantar": true,
+    "isPrinterOn": false,
+    "printerName": "EPSON LX-350 ESC/P",
+    "serialPort": {
+      "path": "COM3",
       "autoOpen": false,
       "baudRate": 9600,
       "dataBits": 8,
