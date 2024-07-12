@@ -11,4 +11,5 @@
     - npm run electronB (with ng build)
     - npm run electron (son build dosyasından electron açılır)
 
- 
+# GH Token Aktifleştirme
+- $env:GH_TOKEN = 'token'

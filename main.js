@@ -70,12 +70,13 @@ async function createWindow() {
 
       if (
         (currMessage.endsWith("\r") || currMessage.endsWith("\\r")) &&
-        currMessage.startsWith("@")
+        (currMessage.startsWith("@") || currMessage.startsWith("B"))
       ) {
         currMessage = currMessage
           .replaceAll("\\r", "")
           .replaceAll("\r", "")
           .replaceAll("@", "")
+          .replaceAll("B", "")
           .replaceAll(" ", "");
 
         printToAngular("Parsed => " + currMessage);
