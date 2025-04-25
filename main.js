@@ -95,8 +95,23 @@ async function createWindow() {
           }
         }
         currMessage = "";
-      } else if (currMessage.endsWith("\r")) {
-        mainWindow.webContents.send("kantar", ["0"]);
+      } else if (currMessage.endsWith("\r") || currMessage.includes("(kg)")) {
+
+        currMessage = parseInt(currMessage.replaceAll(" ", "").split('').filter(a => !isNaN(a)).join(''));
+
+        messages.push(currMessage);
+
+        if (messages.length == 5) {
+          let allSame = [...new Set(messages)].length == 1;
+
+          if (allSame) {
+            mainWindow.webContents.send("kantar", [messages[0]]);
+            console.log("Data sended => " + messages[0]);
+            messages = [];
+          } else {
+            messages = messages.slice(1);
+          }
+        }
         currMessage = "";
       }
       if (currMessage.length > 50) currMessage = "";
