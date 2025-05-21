@@ -4,7 +4,6 @@ import { DataStateChangeEvent, GridComponent, GridDataResult, RowClassArgs } fro
 import { State, aggregateBy, process } from '@progress/kendo-data-query';
 import { ElectronService } from 'ngx-electron';
 import { ButtonType, DataSource } from 'src/app/service/datasource';
-import { environment } from 'src/environment';
 import * as Notiflix from 'node_modules/notiflix/dist/notiflix-3.2.6.min.js';
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
@@ -13,6 +12,7 @@ import { ExcelExportData } from '@progress/kendo-angular-excel-export';
 import helper from 'src/app/service/helper';
 import { DokumEditComponent } from '../dokum-edit/dokum-edit.component';
 import { AppNetworkStatus } from 'src/app/network-status';
+import { KantarConfig } from 'src/app/helper/kantar-config';
 @Component({
   selector: 'app-tespit-history',
   encapsulation: ViewEncapsulation.None,
@@ -21,7 +21,7 @@ import { AppNetworkStatus } from 'src/app/network-status';
 })
 export class DashboardComponent implements OnInit {
   static componentInstance: any;
-  private url: string = environment.production ? environment.apiUrl : '/api';
+  private url: string = this.kantarConfig.serviceUrl;
   @ViewChild('grid') grid: GridComponent;
   public ButtonType = ButtonType;
   public fileExcelIcon: SVGIcon = fileExcelIcon;
@@ -53,6 +53,7 @@ export class DashboardComponent implements OnInit {
     private ref: ChangeDetectorRef,
     private ds: DataSource,
     public help: helper,
+    public kantarConfig: KantarConfig,
   ) {
     this.allData = this.allData.bind(this);
     DashboardComponent.componentInstance = this;
@@ -161,7 +162,7 @@ export class DashboardComponent implements OnInit {
 
   public async BindGrid() {
     this.clearSelections();
-    this.list = await this.ds.get(`${this.url}/api/KantarListV4?basTar=${moment(this.basTar).format('yyyy-MM-DD')}&bitTar=${moment(this.bitTar).add(1, 'days').format('yyyy-MM-DD')}&tanimKantarId=${window.localStorage.getItem("KantarId")}`);
+    this.list = await this.ds.get(`${this.url}/api/KantarListV4?basTar=${moment(this.basTar).format('yyyy-MM-DD')}&bitTar=${moment(this.bitTar).add(1, 'days').format('yyyy-MM-DD')}&tanimKantarId=${this.kantarConfig.kantarId}`);
     this.view = process(this.list, this.state);
     this.total = aggregateBy(this.list, [{ field: 'NetTonaj', aggregate: 'sum' }]);
   }
@@ -202,7 +203,7 @@ export class DashboardComponent implements OnInit {
   }
 
   async save() {
-    this.formData.TanimlarKantarId = await window.localStorage.getItem("KantarId");
+    this.formData.TanimlarKantarId = this.kantarConfig.kantarId;
     this.formData.ProjeId = this.user.ProjeId;
     this.formData.IsOffline = AppNetworkStatus.isOffline;
     var err = this.validations();
@@ -267,7 +268,7 @@ export class DashboardComponent implements OnInit {
     if (willDelete.value != true) return;
 
     this.isLoading = true;
-    this.formData.TanimlarKantarId = await window.localStorage.getItem("KantarId");
+    this.formData.TanimlarKantarId = this.kantarConfig.kantarId;
     var result = await this.ds.put(`${this.url}/api/Iade?AracId=${this.formData.AracId}&TanimlarKantarId=${this.formData.TanimlarKantarId}&IadeTonaj=${this.formData.Tonaj}&IsIade=true`, "");
     this.isLoading = false;
 

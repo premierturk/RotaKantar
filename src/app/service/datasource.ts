@@ -6,6 +6,7 @@ import * as Notiflix from 'node_modules/notiflix/dist/notiflix-3.2.6.min.js';
 import { Router } from '@angular/router';
 import { AppNetworkStatus } from '../network-status';
 import * as moment from 'moment';
+import { KantarConfig } from '../helper/kantar-config';
 
 @Injectable({
   providedIn: 'root',
@@ -159,7 +160,7 @@ export class DataSource {
         const malzeme = JSON.parse(window.localStorage.getItem("MalzemeTuruList")).find(a => a.MalzemeTuruId == data.MalzemeTipiId);
         const tasOcagi = JSON.parse(window.localStorage.getItem("TasOcaklariMini")).find(a => a.TasOcagiId == data.TasOcagiId);
         const projeAlani = JSON.parse(window.localStorage.getItem("ProjeAlanlari")).find(a => a.ProjeAlanId == data.ProjeAlaniId);
-        const kantarAdi = window.localStorage.getItem("KantarAdi");
+        const kantarAdi = new KantarConfig().kantarAdi;
         const user = JSON.parse(window.localStorage.getItem("user"));
 
         const fisData = {

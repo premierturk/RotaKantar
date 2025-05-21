@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import * as Notiflix from 'node_modules/notiflix/dist/notiflix-3.2.6.min.js';
+import { KantarConfig } from 'src/app/helper/kantar-config';
 import { ButtonType, DataSource } from 'src/app/service/datasource';
-import { environment } from 'src/environment';
 
 @Component({
   selector: 'app-dokum-edit',
@@ -10,7 +10,7 @@ import { environment } from 'src/environment';
   styleUrls: ['./dokum-edit.component.scss']
 })
 export class DokumEditComponent implements OnInit {
-  private url: string = environment.production ? environment.apiUrl : '/api';
+  private url: string = this.kantarConfig.serviceUrl;
 
   @Input() dokum;
   @Output() result: EventEmitter<any> = new EventEmitter();
@@ -27,7 +27,8 @@ export class DokumEditComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private ds: DataSource,) {
+    private ds: DataSource,
+    public kantarConfig: KantarConfig,) {
 
   }
 

@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataSource } from '../service/datasource';
 import { GradientConfig } from '../app-config';
-import { environment } from '../../environment';
 import httpClient from '../service/http-client';
+import { KantarConfig } from '../helper/kantar-config';
+
 @Component({
   selector: 'app-giris',
   templateUrl: './giris.component.html',
@@ -14,10 +15,10 @@ export class GirisComponent {
   constructor(
     public ds: DataSource,
     private router: Router,
+    public kantarConfig: KantarConfig
   ) {
     this.gradientConfig = GradientConfig.config;
   }
-  private url: string = environment.production ? environment.apiUrl : "/api";
   isLoading: boolean = false;
   public formData: any = {
     username: '',
@@ -27,7 +28,7 @@ export class GirisComponent {
 
   async giris() {
     this.isLoading = true;
-    const result = await this.ds.login(`${this.url}/token`, `grant_type=password&username=${this.formData.username}&password=${this.formData.password}`);
+    const result = await this.ds.login(`${this.kantarConfig.serviceUrl}/token`, `grant_type=password&username=${this.formData.username}&password=${this.formData.password}`);
     this.isLoading = false;
     if (![null, undefined, "null"].includes(result.access_token)) {
       window.localStorage.setItem('user', JSON.stringify(result));

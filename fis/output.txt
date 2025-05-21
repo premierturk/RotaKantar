@@ -1,18 +1,18 @@
 REC ULUSLARARASI İNŞ.YAT.SAN. VE TİC. A.Ş.
 TEL 0212 852 4707 | FAX 0212 852 06 12
-DEBUG Kantar
+Yazmalı Kantar
 
-Tartı No            : 
-Plaka                 : 08 K 3057
+Tartı No            : 244
+Plaka                 : 33 EMJ 37
 1.Tartı Tarihi    : 
-2.Tartı Tarihi    : 25.10.2023 09:34
+2.Tartı Tarihi    : 22.09.2023 10:05
 Malzeme Adı    : 0-5 MM KIRMATAŞ
-Firma Adı          : METAY İNŞ.
-Geldiği Yer       : ALC MADENCİLİK
-Gittiği Yer         : 106+800-107-300
-Tartı memuru   : kantar
+Firma Adı          : TEST FİRMASI
+Geldiği Yer       : YAZLAMAZLI TAŞ OCAGI
+Gittiği Yer         : 
+Tartı memuru   : kantar_test
 
 
 1.Tartı                : 12000 kg
-2.Tartı                : 30001 kg
-Net                     : 18001 kg
+2.Tartı                : 33333 kg
+Net                     : 21333 kg
