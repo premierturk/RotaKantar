@@ -39,9 +39,11 @@ class AppConfig {
             fs.appendFileSync(AppFiles.kantarConfig, "");
 
             checkOldConfiguration();
+            return;
         }
 
         var config = fs.readFileSync(AppFiles.kantarConfig, "utf-8");
+        var jsonConfig = JSON.parse(config);
 
         if (config == "") {
             ayarlarMenu.items[0].click();
@@ -49,7 +51,6 @@ class AppConfig {
         }
 
         setTimeout(() => sendToAngular(config), 2000);
-        var jsonConfig = JSON.parse(config);
         for (const [key, value] of Object.entries(jsonConfig)) {
             if (key != "serialPort") this[key] = value;
             else this[key] = new SerialPortConfigs(value);
@@ -81,6 +82,16 @@ function checkOldConfiguration() {
 
     //old configuration to new 
     config.url = 'https://rotamag.ronesans.com/Api';
+
+    if (!config.kantarMarka) {
+        if (config.url == null || config.url.includes("mag")) {
+            config.kantarMarka = "Esit";
+        }
+        else {
+            config.kantarMarka = "Diğer";
+        }
+    }
+
     AppConfig.update(null, config);
 
 }

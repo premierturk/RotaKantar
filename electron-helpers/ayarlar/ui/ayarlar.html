@@ -13,12 +13,12 @@
 </head>
 
 <body ng-app="myApp" ng-controller="myCtrl">
-    <!-- <div ng-if="loading">
+    <div ng-if="loading">
         <div class="text-center" style="height: 750px;padding-top: 250px;">
             <div class="spinner"></div>
         </div>
-    </div> -->
-    <div class="wrapper" style="height: 750px;">
+    </div>
+    <div class="wrapper" style="height: 750px;" ng-if="!loading">
 
         <h1 style="margin-top: 0px; text-align: center;">Ayarlar</h1>
 
@@ -57,7 +57,10 @@
         </div>
         <div class="row input-row">
             <label class="col-xs-3 form-label">Kantar Marka:</label>
-            <input type="text" class="form-control input-sm col-xs-9" ng-model="kantarConfig.kantarMarka">
+            <select class="form-control col-xs-9" ng-model="kantarConfig.kantarMarka"
+                ng-options="x for x in dsKantarMarka">
+            </select>
+            <!-- <input type="text" class="form-control input-sm col-xs-9" ng-model="kantarConfig.serialPort.path"> -->
         </div>
         <div class="row input-row">
             <label class="col-xs-3 form-label">COM Port Number:</label>

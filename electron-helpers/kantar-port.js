@@ -17,6 +17,8 @@ function initializeMainJsVariables() {
     dialog = mainJs.dialog;
 }
 
+intFromString = (s) => parseInt(s.replaceAll(" ", "").split('').filter(a => !isNaN(a)).join(''));
+
 class KantarPort {
     static port;
     static start() {
@@ -55,8 +57,22 @@ class KantarPort {
 
     static dataParser(msg) {
         switch (AppConfig.kantarMarka) {
+            case "Tunay":
+                if (msg == null) return 0;
+                var arr = msg.split(" ");
+                if (arr.length < 2) return 0;
+                else if (arr[1].length < 6) return 0;
+
+                return parseInt(arr[1]);
+            case "Esit":
+                if (!msg.startsWith("@") && !currMessage.startsWith("B")) {
+                    mainWindow.webContents.send("kantar", [messages[0]]);
+                    return 0;
+                }
+
+                return intFromString(msg);
             default:
-                return parseInt(msg.replaceAll(" ", "").split('').filter(a => !isNaN(a)).join(''));
+                return intFromString(msg);
         }
     }
 
@@ -69,8 +85,15 @@ class KantarPort {
 
         if (!currMessage.endsWith("\r") && !currMessage.endsWith("\\r") && !currMessage.endsWith("\n") && !currMessage.endsWith("\\n")) return;
 
+        currMessage = currMessage
+            .replaceAll("\\r", "")
+            .replaceAll("\r", "")
+            .replaceAll("\\n", "")
+            .replaceAll("\n", "");
 
-        //delete spaces and take only numeric digits !!!!!
+        if (currMessage.split('').every(a => isNaN(a))) return;
+
+        //Default : delete spaces and take only numeric digits !!!!!
         currMessage = KantarPort.dataParser(currMessage);
 
         printToAngular("Parsed => " + currMessage);

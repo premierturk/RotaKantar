@@ -4,11 +4,13 @@ app.controller("myCtrl", function ($scope) {
   $scope.kantarConfig = {};
   $scope.loading = true;
   $scope.dsCOMPort = Array.from({ length: 100 }, (_, i) => i + 1).map(a => "COM" + a);
+  $scope.dsKantarMarka = ["Tunay", "Esit", "Diğer"];
 
   ipcRenderer.on("config", (event, data) => {
     $scope.loading = false;
     console.log(data);
     $scope.kantarConfig = data;
+
     $scope.$apply();
   });
 

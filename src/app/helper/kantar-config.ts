@@ -23,7 +23,7 @@ export class KantarConfig {
 
         // this.serviceUrl = isDevMode() ? "/api" : `${this.url}/HYS.WebApi/api`;
         this.serviceUrl = `${this.url}/Api`;
-        console.log(this.serviceUrl);
+        //console.log(this.serviceUrl);
     }
 }
 
