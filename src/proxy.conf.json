@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://10.210.210.105:3656",
+    "target": "https://rotamag.ronesans.com",
     "secure": false
   }
 }

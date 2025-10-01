@@ -66,7 +66,7 @@ class KantarPort {
                 return parseInt(arr[1]);
             case "Esit":
                 if (!msg.startsWith("@") && !currMessage.startsWith("B")) {
-                    mainWindow.webContents.send("kantar", [messages[0]]);
+                    mainWindow.webContents.send("kantar", [0]);//Tonaj sabit değilse direkt sıfırla esit için @ sabit B boş demek
                     return 0;
                 }
 

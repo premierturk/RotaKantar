@@ -7,7 +7,7 @@
           <label>Başlangıç Tarihi :</label>
         </div>
         <div class="col-md-8">
-          <kendo-datepicker (valueChange)="BindGrid()" [(ngModel)]="basTar">
+          <kendo-datepicker (valueChange)="BindGrid()" [(ngModel)]="basTar" [size]="'small'">
           </kendo-datepicker>
         </div>
       </div>
@@ -16,7 +16,7 @@
           <label> Bitiş Tarihi :</label>
         </div>
         <div class="col-md-8">
-          <kendo-datepicker (valueChange)="BindGrid()" [(ngModel)]="bitTar">
+          <kendo-datepicker (valueChange)="BindGrid()" [(ngModel)]="bitTar" [size]="'small'">
           </kendo-datepicker>
         </div>
       </div>
@@ -71,8 +71,13 @@
           </span>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column title="Malzeme Adı" field="MalzemeAdi"
-        [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
+      <kendo-grid-column title="Malzeme Adı" field="MalzemeAdi" [style]="{ 'white-space': 'nowrap' }">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span kendoTooltip title="{{dataItem?.MalzemeAdi}}">
+            {{dataItem?.MalzemeAdi}}
+          </span>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column [width]="100" title="Plaka" field="PlakaNo"></kendo-grid-column>
       <kendo-grid-column [width]="145" title="Dara Tarihi" field="DaraGuncellemeTarihi">
         <ng-template kendoGridCellTemplate let-dataItem="dataItem">
@@ -83,8 +88,8 @@
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
       <kendo-grid-column [width]="75" title="Dara" field="Dara"
         [style]="{ 'white-space': 'nowrap' }"></kendo-grid-column>
-      <kendo-grid-column [width]="100" title="Net Tonaj" field="NetTonaj">
-        <ng-template kendoGridFooterTemplate let-column="column">Toplam:
+      <kendo-grid-column [width]="150" title="Net Tonaj" field="NetTonaj">
+        <ng-template kendoGridFooterTemplate let-column="column">
           {{total["NetTonaj"]==undefined ? 0 : total["NetTonaj"].sum | number:"1.0-0"}} kg</ng-template>
       </kendo-grid-column>
       <kendo-grid-column [width]="145" title="Tarih" field="TartiTarih">
@@ -92,7 +97,7 @@
           {{ dataItem.TartiTarih | date : "dd/MM/yyyy HH:mm" }}
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column [width]="150" title="" title="Açıklama" field="Aciklama"
+      <kendo-grid-column [width]="100" title="" title="Açıklama" field="Aciklama"
         [style]=" { 'white-space' : 'nowrap' }">
         <ng-template kendoGridCellTemplate let-dataItem>
           <span kendoTooltip title="{{dataItem?.Aciklama}}">
@@ -134,19 +139,19 @@
       <div class="mb-2">
         <label>Firma</label>
         <kendo-textbox [disabled]="true" class="width" [clearButton]="true" [(ngModel)]="formData.FirmaAdi"
-          placeholder="Firma">
+          [size]="'small'" placeholder="Firma">
         </kendo-textbox>
       </div>
       <div class="mb-2">
         <label>Dara</label>
         <kendo-numerictextbox [disabled]="true" class="width" [spinners]="false" format="#" [(ngModel)]="formData.Dara"
-          placeholder="Dara">
+          [size]="'small'" placeholder="Dara">
         </kendo-numerictextbox>
       </div>
       <div class="mb-2">
         <label>Tonaj</label>
         <kendo-numerictextbox [disabled]="true" class="width" [spinners]="false" format="#" [(ngModel)]="formData.Tonaj"
-          placeholder="Tonaj">
+          [size]="'small'" placeholder="Tonaj">
         </kendo-numerictextbox>
       </div>
       <div class="mb-2">
@@ -159,12 +164,13 @@
       </div>
       <div class="mb-2">
         <label>İrsaliye No</label>
-        <kendo-textbox class="width" [clearButton]="true" [(ngModel)]="formData.IrsaliyeNo" placeholder="İrsaliye No">
+        <kendo-textbox class="width" [clearButton]="true" [(ngModel)]="formData.IrsaliyeNo" placeholder="İrsaliye No"
+          [size]="'small'">
         </kendo-textbox>
       </div>
       <div class="mb-2">
         <label>Açıklama</label>
-        <kendo-textarea class="width" [rows]="3" [resizable]="'none'" [(ngModel)]="formData.Aciklama"
+        <kendo-textarea class="width" [rows]="2" [resizable]="'none'" [(ngModel)]="formData.Aciklama" [size]="'small'"
           placeholder="Açıklama">
         </kendo-textarea>
       </div>
