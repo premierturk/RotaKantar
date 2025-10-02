@@ -71,6 +71,8 @@ class AppConfig {
     }
 }
 
+var kmoKantars = ["Sazlı Dere", "Olimpiyat", "Tessan", "Akdağlar"];
+
 function checkOldConfiguration() {
     const configJsonFile = JSON.parse(fs.readFileSync(AppFiles.old_kantarConfigs));
     const kantarName = JSON.parse(fs.readFileSync(AppFiles.old_kantarName)).kantarName;
@@ -81,20 +83,17 @@ function checkOldConfiguration() {
     if (config.kantarId == undefined) return;
 
     //old configuration to new 
-    config.url = 'https://rotamag.ronesans.com/Api';
-
-    if (!config.kantarMarka) {
-        if (config.url == null || config.url.includes("mag")) {
-            config.kantarMarka = "Esit";
-        }
-        else {
-            config.kantarMarka = "Diğer";
-        }
+    if (kmoKantars.some(kantarName => config.kantarAdi.includes(kantarName))) {
+        config.url = 'https://rotakmo.ronesans.com';
+        config.kantarMarka = "Diğer";
+    }
+    else {
+        config.url = 'https://rotamag.ronesans.com';
+        config.kantarMarka = "Esit";
     }
 
-    AppConfig.update(null, config);
 
+    AppConfig.update(null, config);
 }
 
-
-module.exports = AppConfig;
+module.exports = AppConfig; 

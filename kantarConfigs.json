@@ -194,5 +194,19 @@
       "dataBits": 8,
       "parity": "none"
     }
+  },
+  "sazlidere": {
+    "kantarId": 2,
+    "kantarAdi": "Sazlı Dere Kantar",
+    "kantar": true,
+    "isPrinterOn": true,
+    "printerName": "EPSON LX-350 ESC/P (Kopya 1)",
+    "serialPort": {
+      "path": "COM1",
+      "autoOpen": false,
+      "baudRate": 1200,
+      "dataBits": 8,
+      "parity": "none"
+    }
   }
 }
