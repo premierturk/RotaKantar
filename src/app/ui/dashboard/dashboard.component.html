@@ -46,7 +46,8 @@
     <kendo-grid #grid [data]="view" [selectable]="true" [navigable]="true" [pageSize]="state.take" [size]="'small'"
       [skip]="state.skip" [sortable]="true" [group]="state.group" [filter]="state.filter" [sort]="state.sort"
       kendoGridSelectBy="TartiNo" [pageable]="true" [filterable]="true" [resizable]="true" [selectedKeys]="mySelections"
-      (cellClick)="onCellClick($event)" (dataStateChange)="dataStateChange($event)" [rowClass]="rowCallback">
+      (cellClick)="onCellClick($event)" (dataStateChange)="dataStateChange($event)" [rowClass]="rowCallback"
+      (excelExport)="onExcelExport($event)">
       <kendo-grid-excel fileName="Dokum.xls" [fetchData]="allData"></kendo-grid-excel>
       <kendo-grid-column [width]="80" title="Tartı No" field="TartiNo"
         [style]=" { 'white-space' : 'nowrap' }"></kendo-grid-column>

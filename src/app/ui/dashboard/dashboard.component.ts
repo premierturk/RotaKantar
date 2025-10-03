@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef, HostListener, ViewEncapsulation } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DataStateChangeEvent, GridComponent, GridDataResult, RowClassArgs } from '@progress/kendo-angular-grid';
+import { DataStateChangeEvent, ExcelExportEvent, GridComponent, GridDataResult, RowClassArgs } from '@progress/kendo-angular-grid';
 import { State, aggregateBy, process } from '@progress/kendo-data-query';
 import { ElectronService } from 'ngx-electron';
 import { ButtonType, DataSource } from 'src/app/service/datasource';
@@ -123,12 +123,32 @@ export class DashboardComponent implements OnInit {
 
   public allData(): ExcelExportData {
     var excelList = this.list;
-    for (var item of excelList) {
-      item.TartiTarih = moment(new Date(item.TartiTarih)).format("DD/MM/yyyy HH:mm");
-      if (item.DaraGuncellemeTarihi != null) item.DaraGuncellemeTarihi = moment(new Date(item.DaraGuncellemeTarihi)).format("DD/MM/yyyy HH:mm");
-    }
+
     const result: ExcelExportData = process(excelList, {});
+
     return result;
+  }
+
+  public onExcelExport(e: ExcelExportEvent): void {
+    // Access the workbook through e.workbook
+    const workbook = e.workbook;
+
+    if (workbook && workbook.sheets && workbook.sheets.length > 0) {
+      const sheet = workbook.sheets[0];
+
+      if (sheet.rows) {
+        sheet.rows.forEach(row => {
+          if (row.cells) {
+            row.cells.forEach(cell => {
+              // Check if the cell value is a Date
+              if (cell.value instanceof Date) {
+                cell.format = 'dd.mm.yyyy hh:mm';
+              }
+            });
+          }
+        });
+      }
+    }
   }
 
   public fillAracForm(arac) {
@@ -163,6 +183,7 @@ export class DashboardComponent implements OnInit {
   public async BindGrid() {
     this.clearSelections();
     this.list = await this.ds.get(`${this.url}/api/KantarListV4?basTar=${moment(this.basTar).format('yyyy-MM-DD')}&bitTar=${moment(this.bitTar).add(1, 'days').format('yyyy-MM-DD')}&tanimKantarId=${this.kantarConfig.kantarId}`);
+
     this.view = process(this.list, this.state);
     this.total = aggregateBy(this.list, [{ field: 'NetTonaj', aggregate: 'sum' }]);
   }

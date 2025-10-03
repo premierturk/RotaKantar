@@ -13,7 +13,7 @@ function handleDates(body: any) {
   body.forEach(function (item) {
     for (const key of Object.keys(item)) {
       const value = item[key];
-      const isDate = moment(value, 'DD-MM-YYYY', true).isValid();
+      const isDate = typeof value === 'string' && moment(value, moment.ISO_8601, true).isValid() && value.includes("T") && (value.length > 23 && value.length < 30);
       if (isDate) {
         item[key] = new Date(value);
       } else if (typeof value === 'object') {
@@ -24,8 +24,8 @@ function handleDates(body: any) {
 }
 
 instance.interceptors.response.use(function (response) {
-  if (response.data.data !== undefined) {
-    handleDates(response.data.data);
+  if (response.data !== undefined) {
+    handleDates(response.data);
   }
   return response;
 }, function (error) {

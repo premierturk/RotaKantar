@@ -1,6 +1,11 @@
 {
-  "/api": {
-    "target": "https://rotamag.ronesans.com",
-    "secure": false
+  "/Api": {
+    "target": "https://rotakmo.ronesans.com",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
   }
 }

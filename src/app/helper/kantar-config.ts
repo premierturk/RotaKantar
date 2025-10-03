@@ -1,4 +1,5 @@
 import { Injectable, isDevMode } from '@angular/core';
+import { Utils } from './utils';
 
 @Injectable({
     providedIn: 'root',
@@ -21,8 +22,8 @@ export class KantarConfig {
             else this[key] = new SerialPort(value);
         }
 
-        // this.serviceUrl = isDevMode() ? "/api" : `${this.url}/HYS.WebApi/api`;
-        this.serviceUrl = `${this.url}/Api`;
+        this.serviceUrl = Utils.isServing ? "/Api" : `${this.url}/Api`;
+        //this.serviceUrl = `${this.url}/Api`;
         //console.log(this.serviceUrl);
     }
 }
